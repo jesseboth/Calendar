@@ -1,0 +1,12 @@
+minutes=$(date +%M)
+diff=30
+
+if  [ $(($minutes % $diff)) != 0 ]; then
+    sleep $(($diff-$(($minutes % $diff))))m
+    bash /home/pi/bash_files/do_stuff
+
+else
+	sleep $(($diff))m
+	bash /home/pi/bash_files/do_stuff
+
+fi

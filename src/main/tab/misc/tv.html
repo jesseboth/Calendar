@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TV</title>
+    <style>
+
+        .appGrid{
+            position: absolute;
+            left: 50%;
+            top:50%;
+            margin-left: -180px;
+            margin-top: -180px;
+            display: inline-grid;
+            grid-template-columns: auto auto auto;
+            background-color: #0f99e3;
+        }
+        .app{
+            width: 100px;
+            height: 100px;
+            border: 10px ridge #0e0e0e;
+            position: relative;
+        }
+        .icon{
+            text-align: center;
+            display: block;
+            margin-top: 20%;
+        }
+    </style>
+</head>
+<body style="background: #0e0e0e">
+
+    <div class="appGrid" onclick="click()">
+        <div class="app">
+            <div class="icon">
+                <a href="https://tv.youtube.com/"><img src="../../images/youtube_tv.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app">
+            <div class="icon">
+                <a href="https://www.youtube.com/"><img src="../../images/youtube.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app" onclick="click()">
+            <div class="icon">
+                <a href="https://www.netflix.com/"><img src="../../images/netflix.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app">
+            <div class="icon">
+                <a href="https://www.disneyplus.com/"><img src="../../images/disney.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app">
+            <div class="icon">
+                <a href="https://www.twitch.tv/"><img src="../../images/twitch.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app">
+            <div class="icon">
+                <a href="https://www.primevideo.com/"><img src="../../images/prime_video.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app">
+            <div class="icon">
+                <a href="https://www.hulu.com/"><img src="../../images/hulu.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app">
+            <div class="icon">
+                <a href="https://www.dcuniverse.com/"><img src="../../images/dc_uni.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+        <div class="app">
+            <div class="icon">
+                <a href="https://www.vudu.com/"><img src="../../images/vudu.png" style="width:60px;height:60px;"></a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

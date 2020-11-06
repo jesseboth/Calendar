@@ -1,0 +1,7 @@
+#parse
+
+cd /home/pi/New_Tab/
+sbt run
+cd
+export DISPLAY=:0
+xdotool key F5
