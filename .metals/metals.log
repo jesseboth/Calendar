@@ -1,0 +1,10 @@
+2020.11.05 19:25:29 INFO  started: Metals version 0.9.4 in workspace 'C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar' for client vscode.
+2020.11.05 19:25:30 INFO  time: initialize in 0.37s
+2020.11.05 19:25:30 WARN  no build tool detected in workspace 'C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2020.11.05 19:25:34 INFO  no build target: using presentation compiler with only scala-library
+2020.11.05 19:25:34 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\run.scala
+2020.11.05 19:25:41 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\run.scala
+Nov 05, 2020 7:27:35 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTraceNotification
+Nov 05, 2020 7:28:12 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTraceNotification
