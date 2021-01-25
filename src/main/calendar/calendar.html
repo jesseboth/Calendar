@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html >
 <head>
+    <title>Calendar</title>
+    <link rel="shortcut icon" type="image/png" href="../images/favicon.png">
     <style>
         :root {
             --width: 130px;
@@ -71,11 +73,14 @@
             font-size: 13px;
             user-select: none;
             text-align: left;
-            width: 127px;
             margin-left: 3px;
             margin-top: 2px;
             overflow: hidden;
             white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 127px;
+            display: block;
+            overflow: hidden
         }
         .event_extra{
             color: #015bbc;
@@ -132,16 +137,27 @@
             font-family: Orbitron-bold;
             font-size: 25px;
             color: #383838;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 450px;
+            display: block;
+            overflow: hidden
         }
         .location{
             font-family: Orbitron-light;
             font-size: 25px;
             color: #383838;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 450px;
+            display: block;
+            overflow: hidden
         }
         .duration{
             font-family: Orbitron;
             font-size: 20px;
             color: #383838;
+            white-space: nowrap;
         }
         .break {
             height: 10px;
@@ -195,8 +211,8 @@
             margin-top: -5px;
         }
         .weather_icon{
-            height: 100px;
-            width: 100px;
+            height: 90px;
+            width: 90px;
             margin-left: -8px;
         }
         #icon_01d{
@@ -218,6 +234,118 @@
             right: 0;
             margin-right: 20px;
             margin-bottom: 20px;
+            cursor: pointer;
+        }
+        #arrows{
+            position: absolute;
+            bottom:0;
+            float: right;
+            width: 925px;
+            /* height: 50px; */
+            right:0;
+            margin-right: 120px;
+            margin-left: 483px;
+            margin-bottom: 10px;
+            user-select: none;
+        }
+        .arrow{
+            height: 50px;
+            width:50px;
+            cursor: pointer;
+        }
+        #forward{
+            /* margin-left: 100px; */
+            margin-left: 875px;
+            margin-top: -50px;
+            transform: rotateY(180deg)
+        }
+        .dot {
+            height: 15px;
+            width: 15px;
+            background-color: #383838;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+        }
+        #description_container{
+            background-color: #151515;
+            width: 450px;
+            height: 560px;
+            margin-left: 10px;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+            position: absolute;
+            border-radius: 10px;
+
+            visibility: hidden;  
+            
+        }
+        #desc_con{
+            background-color: #151515;
+            width: 410px;
+            height: 520px;
+            margin-left: 20px;
+            margin-top: 20px;
+            overflow: hidden;
+            overflow-y:scroll;
+            position: absolute;
+        }
+        #description{
+            width: 410px;
+            font-size: 18px;
+            font-family:'Courier New', Courier, monospace;
+            color:#a1a1a1;
+            position: absolute;
+        }
+        .red_dot{
+            position: absolute;
+            height: 15px;
+            width: 15px;
+            background-color: #be0000;
+            border-radius: 50%;
+            margin-right: 5px;
+            margin-top: 5px;
+            display: inline-block;
+            right: 0;
+            cursor: pointer;
+        }
+        #desc_con::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        #desc_con::-webkit-scrollbar-thumb {
+            background: #303030;
+            border-radius: 20px;
+        }
+
+        #desc_con::-webkit-scrollbar-track {
+            background: #0e0e0e;
+            border-radius: 20px;
+        }
+        a{
+            color: #0f99e3;
+        }
+        .attachment{
+            height: 25px;
+            width: 410px;
+            overflow: hidden;
+            border-radius: 5px;
+            margin-top: 2px;
+        }
+        .attach_image{
+            margin-top: 4px;
+            margin-left: 2px;
+        }
+        .attach_name{
+            width: 80px;
+            margin-left: 18px;
+            margin-top: -20px;
+            white-space: nowrap;
+            color: #0f99e3;
+        }
+        .no_underline{
+            text-decoration: none;
         }
     </style>
 
@@ -288,10 +416,23 @@
     <div class="event_container"></div>
 </div>
 <div id="time"></div>
-
-<div id="back">
-    <a href="../tab/custom_tab.html" type="checkbox"/>
+<div id="back" onclick="backButton()">
     <img alt="back_button" src="../images/back.png" width="40" height="40"/>
+</div>
+<div id="arrows">
+    <div class="arrow" id="backward" onclick="backward_month()">
+        <img src="../images/arrow.png" width="50" height="50"/>
+    </div>
+    <div class="arrow" id="forward" onclick="forward_month()">
+        <img src="../images/arrow.png" width="50" height="50"/>
+    </div>
+</div>
+
+<div id="description_container" onclick="description_clicked_on()">
+    <div id="desc_con">
+        <div id="description"></div>
+    </div>
+    <div class="red_dot" onclick="document.getElementById('description_container').style.visibility = 'hidden'"></div>
 </div>
 <script type="text/javascript" src="../js/calendar.js"></script>
 

@@ -8,3 +8,7 @@ Nov 05, 2020 7:27:35 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notif
 INFO: Unsupported notification method: $/setTraceNotification
 Nov 05, 2020 7:28:12 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 INFO: Unsupported notification method: $/setTraceNotification
+2020.11.05 19:30:55 INFO  shutting down Metals
+2020.11.06 09:47:53 INFO  started: Metals version 0.9.4 in workspace 'C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar' for client vscode.
+2020.11.06 09:47:53 INFO  time: initialize in 0.44s
+2020.11.06 09:48:56 INFO  shutting down Metals

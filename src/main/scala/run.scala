@@ -19,13 +19,12 @@ object run {
     parse_weather.parse_weather(today, week)
 
 
+    /*Default timezone (get from ical file)*/
+    val default_timezone = ""
+    val terms = List("EXAM", "TODO", "WORK")
 
     val out = "src\\main\\js\\agenda.js"
     val cal = "src\\main\\js\\calendar.js"
-    parse_cal.parse(myCal, List(cal, out))
-
-
-    val pi = "/home/pi/New_Tab/src/main/js/calendar.js"
-    parse_cal.parse(myCal, List(pi))
+    parse_cal.parse(myCal, List(cal, out), default_timezone, terms)
   }
 }

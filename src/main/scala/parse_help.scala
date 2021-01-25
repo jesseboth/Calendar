@@ -1,487 +1,629 @@
-
-import java.io.{BufferedWriter, FileWriter}
-
 import scala.io.Source
+import java.io.{BufferedWriter, FileWriter}
 import org.dmfs.rfc5545.DateTime
 import org.dmfs.rfc5545.recur.RecurrenceRule
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode
-import parse_cal.hash
-import parse_weather.weather_5
-
-import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import parse_weather.weather_5
+import parse_cal._
 
-/*helper functions for parse_cal*/
 object parse_help {
-  var month_lengths: Array[Int] = parse_cal.month_lengths
-  val months: List[String] = parse_cal.months
+    var month_lengths = date_info.month_lengths
+    val months = date_info.months
 
-  def fileDownloader(url: String): Iterator[String] = {
-    val lines = Source.fromURL(url)
-    lines.getLines()
-  }
-  def allDay(cur: Int, line: String): List[String] = {
-    var store = ""
-
-    var year = ""
-    var date = ""
-    var month = ""
-    var time = 0
-    var i = cur
-    while (i < line.length) {
-      store += line(i)
-      if (time < 4) {
-        year += line(i)
-      }
-      else if (time < 6) {
-        month += line(i)
-      }
-      else if (time < 8) {
-        date += line(i)
-      }
-      i += 1
-      time += 1
+    def fileDownloader(url: String): Iterator[String] = {
+        val lines = Source.fromURL(url)
+        lines.getLines()
     }
 
-    val put = month + "/" + date + "/" + year
-    List(put, month, date, year)
-  }
-
-  def withTime(cur: Int, line: String): List[String] = {
-    var store = ""
-
-    var year = ""
-    var date = ""
-    var month = ""
-    var hour_24 = ""
-    var time = 0
-    var i = cur
-    while (i < line.length) {
-      store += line(i)
-      if (time < 4) {
-        year += line(i)
-      }
-      else if (time < 6) {
-        month += line(i)
-      }
-      else if (time < 8) {
-        date += line(i)
-      }
-      else if (time == 8) {
-        /*do nothing*/
-      }
-      else if (time < 11) {
-        if (time == 9) {
-
-          hour_24 += line(i)
-
-        }
+    def add_zero(str:String): String = {
+        var t = str.toInt
+        if(t < 10){
+            "0"+t.toString()
+        } 
         else {
-          hour_24 += line(i)
+            str
         }
-      }
-      else if (time < 13) {
-        hour_24 += line(i)
-      }
-      if (time == 10) {
-        hour_24 += ":"
-      }
-      i += 1
-      time += 1
-    }
-    val temp = hour_24.split(":")
-    var int_hour = 0
-
-    var hour = ""
-    hour += hour_24(0)
-    hour += hour_24(1)
-    hour += hour_24(3)
-    hour += hour_24(4)
-
-
-    if (line.contains("America")) {
-      if (line.contains("New_York") || line.contains("Detroit")) {
-      }
-      else {
-        println("NEW CONDITION", line)
-      }
-    }
-    else {
-      hour = timezoneAdjust(hour)
-    }
-    if (year != "1970" && hour.contains("-")) {
-      hour = (2400 + hour.toInt).toString
-      val temp = yesterday(date, month, year)
-      date = temp(0)
-      month = temp(1)
-      year = temp(2)
-    }
-    if (hour.toInt < 100) {
-      hour = (hour.toInt + 2400).toString
-    }
-    val put = month + "/" + date + "/" + year
-    List(put, hour, month, date, year)
-  }
-
-  def yesterday(dat: String, mon: String, ye: String): List[String] = {
-    var date = dat
-    var month = mon
-    var year = ye
-    var temp = 0
-    temp = date.toInt - 1
-    date = temp.toString
-    if (date.toInt == 0) {
-      temp = month.toInt - 1
-      month = temp.toString
-
-      if (month.toInt == 0) {
-        temp = year.toInt - 1
-        year = temp.toString
-        month = "12"
-      }
-      date = parse_cal.month_lengths(month.toInt).toString
     }
 
-    if (date.length < 2 && date.toInt < 10) {
-      date = "0" + date
-    }
-    if (month.length < 2 && month.toInt < 10) {
-      month = "0" + month
-    }
-    List(date, month, year)
-  }
-
-  def timezoneAdjust(hour: String): String = {
-    var toReturn = ""
-    val temp = (hour.toInt - 400).toString
-    if (temp.length != 4 && !temp.startsWith("-")) {
-      toReturn = "0" + temp
-    }
-    else {
-      toReturn = temp
+    def add_zero_time(str:String): String = {
+        if(str.length() < 4){
+            "0"+str
+        } 
+        else {
+            str
+        }
     }
 
-    toReturn
-  }
-
-  def decode_date(date: String): String = {
-    var year = ""
-    var month = ""
-    var day = ""
-    year = date(0).toString + date(1) + date(2) + date(3)
-    month = date(4).toString + date(5)
-    day = date(6).toString + date(7)
-
-    month + "/" + day + "/" + year
-  }
-
-  def findRRULE(line: String, start: String): Unit = {
-
-    var recur: String = ""
-    var i = 0
-    var stop = false
-
-    while (!stop) {
-      if (line(i) == ':') {
-        stop = true
-      }
-      i += 1
-    }
-    while (i < line.length) {
-      recur += line(i)
-      i += 1
+    def get_hashLength(list: List[String]): Int = {
+        var tot = 0
+        var mon = -1
+        for (i <- list){
+            mon = i.split("/")(0).toInt
+            tot+=month_lengths(mon)
+        }
+        tot
     }
 
-    if (line.contains("UNTIL=")) {
-      var temp = ""
-      var new_until = ""
-      var T_count = 0
-      val regex = recur.split(";")
-      for (j <- 0 until regex.length) {
-        if (regex(j).contains("UNTIL=")) {
-          var k = 0
-          var break = false
-          while (!break) {
-            if (k < regex(j).length && regex(j)(k) == 'T') {
-              T_count += 1
-            }
-            if (k == regex(j).length || T_count == 2) {
-              break = true
+    def withTime(line: String, timeZone:String): List[String] = {
+        var sp = line.split(":")
+        var i = sp(0).length()+1
+
+        if(sp.length > 1 && !sp(1).contains("T")){
+            return allDay(i, line)
+        }
+        var store = ""
+        var off = 0
+        var year = ""
+        var date = ""
+        var month = ""
+        var hour_24 = ""
+        var time = 0
+
+        while (i < line.length) {
+        store += line(i)
+        if (time < 4) {
+            year += line(i)
+        }
+        else if (time < 6) {
+            month += line(i)
+        }
+        else if (time < 8) {
+            date += line(i)
+        }
+        else if (time == 8) {
+            /*do nothing*/
+        }
+        else if (time < 11) {
+            if (time == 9) {
+                hour_24 += line(i)
             }
             else {
-              new_until += regex(j)(k)
+                hour_24 += line(i)
             }
-            k += 1
-          }
-          temp += (new_until + ";")
+        }
+        else if (time < 13) {
+            hour_24 += line(i)
+        }
+        if (time == 10) {
+            hour_24 += ":"
+        }
+        i += 1
+        time += 1
+        }
+        val temp = hour_24.split(":")
+        var int_hour = 0
+
+        var hour = hour_24.replace(":", "")
+
+        if(!line.contains("TZID")){
+        var st = daylight_time(timeZone)(0)
+        var en = daylight_time(timeZone)(1)
+        var split_1 = st.split("/")
+        var split_2 = en.split("/")
+        
+        if((month.toInt > split_1(0).toInt) || (month.toInt < split_2(0).toInt)){
+            off = daylight_time(timeZone)(2).toInt
+        }
+        else if((month.toInt == split_2(0).toInt && date.toInt <= split_2(1).toInt)){
+            off = daylight_time(timeZone)(2).toInt
+        }
+        else if((month.toInt == split_1(0).toInt && date.toInt >= split_1(1).toInt)){
+            off = daylight_time(timeZone)(2).toInt
         }
         else {
-          temp += (regex(j) + ";")
+            off = daylight_time(timeZone)(3).toInt
         }
-      }
-      recur = temp
-    }
-
-    var year = 0
-    var month = 0
-    var day = 0
-    val date = start.split("/")
-    year = date(2).toInt
-    month = date(0).toInt - 1 /*0 based*/
-    day = date(1).toInt
-
-    val rule = new RecurrenceRule(recur, RfcMode.RFC2445_LAX)
-    val begin = new DateTime(year, month, day)
-
-    val iter = rule.iterator(begin)
-    var temp = ""
-    while (iter.hasNext && !rule.isInfinite) {
-      temp = iter.nextDateTime().toString
-      
-      parse_cal.rrule_wating.enqueue(temp)
-    }
-  }
-
-  def find_day_of_year(month: String, day: String): Int = {
-    var toReturn = 0
-    /*jan 1 = 1*/
-    val mon = month.toInt
-    val d = day.toInt
-    for (i <- 1 until mon) {
-      toReturn += month_lengths(i)
-    }
-    toReturn += d
-    toReturn
-  }
-
-  def find_date(day_of_year: Int): List[String] = {
-    var stop = false
-    var cur = day_of_year
-    var mon = 1
-    var day = 1
-    var mon_string = ""
-    var day_string = ""
-
-    while (!stop) {
-      if (cur <= month_lengths(mon)) {
-        day = cur
-        stop = true
-      }
-      else {
-        cur -= month_lengths(mon)
-        mon += 1
-      }
-    }
-    if (mon < 10) {
-      mon_string = "0" + mon.toString
-    }
-    else {
-      mon_string = mon.toString
-    }
-    if (day < 10) {
-      day_string = "0" + day.toString
-    }
-    else {
-      day_string = day.toString
-    }
-
-    if (day == 0) {
-      List("null", "null")
-    }
-    else {
-      List(mon_string, day_string)
-    }
-  }
-
-  def time_to_12(hour_24: String): String = {
-    var temp = hour_24.split(":")
-    if (temp.length == 1) {
-      temp = Array(hour_24(0).toString + hour_24(1).toString, hour_24(2).toString + hour_24(3).toString)
-    }
-    var int_hour = 0
-    var hour_12 = ""
-    if (temp(0).toInt > 12) {
-      int_hour = temp(0).toInt - 12
-      if (int_hour == 12) {
-        hour_12 = int_hour.toString + ":" + temp(1) + " AM"
-        hour_12
-      }
-      else {
-        hour_12 = int_hour.toString + ":" + temp(1) + " PM"
-        hour_12
-      }
-    }
-    else {
-      if (temp(0) == "12") {
-        hour_12 = temp(0) + ":" + temp(1) + " PM"
-        hour_12
-      }
-      else {
-        hour_12 = temp(0).toInt.toString + ":" + temp(1) + " AM"
-        hour_12
-      }
-    }
-  }
-
-  def insert(towrite: List[String], todo: Boolean): Unit = {
-    var summary = ""
-    var start_time = ""
-    var end_time = ""
-    var location = ""
-    var date = ""
-
-    /*to add to hash*/
-    var array: Array[String] = null
-    var year = ""
-    var t: List[String] = null
-    if (towrite.length == 4) {
-      summary = towrite(0)
-      start_time = towrite(2)
-      end_time = towrite(3)
-      if(todo){
-        if(start_time == "ALL_DAY"){
-          start_time = "TODO"
-        }
-      }
-      while (parse_cal.rrule_wating.nonEmpty) {
-        date = parse_help.decode_date(parse_cal.rrule_wating.dequeue())
-        array = date.split("/")
-        year = array(2)
-        if (year == parse_cal.current_year) {
-          t = List(summary, date, start_time, end_time)
-          parse_cal.hash(parse_help.find_day_of_year(array(0), array(1))) +:= t
-          t = List()
-        }
-        else if (date == parse_cal.new_years_day) {
-          t = List(summary, date, start_time, end_time)
-          parse_cal.hash(0) +:= t
-          t = List()
-        }
-      }
-    }
-    else if (towrite.length == 5) {
-      summary = towrite(0)
-      start_time = towrite(2)
-      end_time = towrite(3)
-      location = towrite(4)
-
-      while (parse_cal.rrule_wating.nonEmpty) {
-        date = parse_help.decode_date(parse_cal.rrule_wating.dequeue())
-        array = date.split("/")
-        year = array(2)
-        if (year == parse_cal.current_year) {
-          t = List(summary, date, start_time, end_time, location)
-          parse_cal.hash(parse_help.find_day_of_year(array(0), array(1))) +:= t
-          t = List()
-        }
-        else if (date == parse_cal.new_years_day) {
-          t = List(summary, date, start_time, end_time, location)
-          parse_cal.hash(0) +:= t
-          t = List()
-        }
-      }
-    }
-    else if (towrite.length == 3) {
-      summary = towrite(0)
-      start_time = towrite(2)
-      if(todo){
-        start_time = "TODO"
-      }
-      while (parse_cal.rrule_wating.nonEmpty) {
-        date = parse_help.decode_date(parse_cal.rrule_wating.dequeue())
-        array = date.split("/")
-        year = array(2)
-        if (year == parse_cal.current_year) {
-          t = List(summary, date, start_time)
-          parse_cal.hash(parse_help.find_day_of_year(array(0), array(1))) +:= t
-          t = List()
-        }
-        else if (date == parse_cal.new_years_day) {
-          t = List(summary, date, start_time)
-          parse_cal.hash(0) +:= t
-          t = List()
-        }
-
-      }
-    }
-    else {
-      println("I Don't Know")
-    }
-
-  }
-
-  def print_hash(): Unit = {
-    /*helpful print*/
-    var find: List[String] = List()
-    for (i <- hash.indices) {
-      find = parse_help.find_date(i)
-      println("******" + find(0) + "/" + find(1) + "******")
-      println("\n")
-      for (j <- hash(i)) {
-        if (j(2) != "ALL_DAY" || j(2) != "TODO") {
-          println("(" + j(0) + ", " + parse_help.time_to_12(j(2)) + ", " + parse_help.time_to_12(j(3)) + ")")
+        hour = timezoneAdjust(hour, off)
         }
         else {
-          println("(" + j(0) + ", " + j(2) + ")")
+        hour = timezoneAdjust(hour, off)
         }
-      }
-      println("\n\n")
+        if (year != "1970" && hour.contains("-")) {
+        hour = (2400 + hour.toInt).toString
+        val temp = yesterday(date, month, year)
+        date = temp(0)
+        month = temp(1)
+        year = temp(2)
+        }
+        val put = month + "/" + date + "/" + year
+        List(put, hour)
     }
-  }
 
-  def sort(): Unit = {
-    val start = 2
-    val end = 3
-    val all = 2
+    def timezoneAdjust(hour: String, adjust: Int): String = {
+        var toReturn = ""
+        val temp = (hour.toInt + adjust).toString
+        if (temp.length != 4 && !temp.startsWith("-")) {
+            toReturn = temp
+        }
+        else {
+            toReturn = temp
+        }
+        toReturn
+    }
 
-    var least: List[String] = List()
-    var new_day: ListBuffer[List[String]] = new ListBuffer[List[String]]
+    def yesterday(dat: String, mon: String, ye: String): List[String] = {
+        var date = dat
+        var month = mon
+        var year = ye
+        var temp = 0
+        temp = date.toInt - 1
+        date = temp.toString
+        if (date.toInt == 0) {
+            temp = month.toInt - 1
+            month = temp.toString
 
-    var todo: ListBuffer[List[String]] = new ListBuffer[List[String]]
-    val hash = parse_cal.hash
-    var event: List[String] = null
-    for (day <- hash.indices) {
-      while (hash(day).nonEmpty) {
-        val events = hash(day).iterator
-        while (events.hasNext) {
-          event = events.next()
-          if (event(start) == "ALL_DAY" || event(start) == "TODO") {
-            if(event(start) == "TODO"){
-              todo += event
-              hash(day).remove(hash(day).indexOf(event))
+            if (month.toInt == 0) {
+                temp = year.toInt - 1
+                year = temp.toString
+                month = "12"
+            }
+            date = month_lengths(month.toInt).toString
+        }
+
+        if (date.length < 2 && date.toInt < 10) {
+            date = "0" + date
+        }
+        if (month.length < 2 && month.toInt < 10) {
+            month = "0" + month
+        }
+        List(date, month, year)
+    }
+
+    def allDay(cur: Int, line: String): List[String] = {
+        var store = ""
+
+        var year = ""
+        var date = ""
+        var month = ""
+        var time = 0
+        var i = cur
+        while (i < line.length) {
+        store += line(i)
+        if (time < 4) {
+            year += line(i)
+        }
+        else if (time < 6) {
+            month += line(i)
+        }
+        else if (time < 8) {
+            date += line(i)
+        }
+        i += 1
+        time += 1
+        }
+
+        val put = month + "/" + date + "/" + year
+        List(put)
+    }
+
+    def get_months(current_month: String, current_year: String, before: Int, after: Int): List[String] = {
+        val int_cur_month = current_month.toInt
+        val int_cur_year = current_year.toInt
+        var months: ListBuffer[String] = new ListBuffer()
+        var toadd = ""
+
+        var i = 0
+        var prev_month = int_cur_month
+        var prev_year = int_cur_year
+        while(i < before){
+            prev_month -=1
+
+            if(prev_month == 0){
+                prev_month = 12
+                prev_year = int_cur_year -1
+            }
+            toadd = add_zero(prev_month.toString()) + "/" + prev_year.toString()
+            months += toadd
+            i+=1
+        }
+        toadd = add_zero(current_month) + "/" + current_year
+        months += toadd
+
+        i=0
+        var next_month = int_cur_month
+        var next_year = int_cur_year
+        while(i < after){
+            next_month +=1
+            if(next_month == 13){
+                next_month = 1
+                next_year = int_cur_year + 1
+            }
+            toadd = add_zero(next_month.toString()) + "/" + next_year.toString()
+            months += toadd
+            i+=1
+        }
+        months.toList
+    }
+
+    def toData(line: String): String = {
+        var temp = ""
+        if(line.contains(":")){
+            var l = line.split(":")
+            if(l.length > 2){
+                var i = 1
+                while(i < l.length){
+                    if(i < l.length -1){
+                        temp+=l(i)+":"
+                    }
+                    else{
+                        temp+=l(i)
+                    }
+                    i+=1
+                }
+                temp
+            }
+            else if(l.length == 2){
+                l(1)
             }
             else{
-              new_day += add_remove(event, day)
+                ""
             }
-          }
-          else if (least.isEmpty || event(start).toInt < least(start).toInt) {
-            least = event
-          }
         }
-	      if(least.nonEmpty){
-        	new_day += add_remove(least, day)
-	      }
-        least = List()
-      }
-      if(todo.nonEmpty){
-        for(event <- todo){
-          new_day +:= event
+        else{
+            line
         }
-      }
-      hash(day) = new_day
-      new_day = new ListBuffer[List[String]]
-      todo = new ListBuffer[List[String]]
+
     }
 
-  }
-
-  def add_remove(least: List[String], day: Int): List[String] = {
-    if (hash(day).nonEmpty) {
-      hash(day).remove(hash(day).indexOf(least))
+      def daylight_date(line:String): String = {
+        var i = 0
+        var l = line.split(":")(1).split("")
+        var year = ""
+        var mon = ""
+        var day = ""
+        
+        year =l(0)+l(1)+l(2)+l(3)
+        mon = l(4)+l(5)
+        day = l(6)+l(7)
+        mon + "/" + day
+        
     }
-    least
-  }
-  def write(out: String): Unit = {
+
+    def decode_ical(data: String): List[String] = {
+        var l: Array[String] = Array()
+        var date = ""
+        var time = ""
+        if(data.contains(":")){
+            l = data.split(":")
+            if(l.length > 1){
+                date = l(1)
+            }
+            else{
+                return List("", "")
+            }
+        }
+        else{
+            date = data
+        }
+        var d: Array[String] = Array()
+        if(date.contains("T")){
+            l = date.split("T")
+            d = l(0).split("")
+            var i = 0
+            while(i < 4){
+                time += l(1)(i)
+                i += 1
+            }
+        }
+        else{
+            d = date.split("")
+        }
+        var year =d(0)+d(1)+d(2)+d(3)
+        var mon = d(4)+d(5)
+        var day = d(6)+d(7)
+        date = mon + "/" + day + "/" + year
+        List(date, time)
+    }
+
+    def find_RRULE(line: String, start: String): Unit = {
+        var recur: String = ""
+        var i = 0
+        var stop = false
+        var until = ""
+        var stop_at_until = false
+
+        while (!stop) {
+            if (line(i) == ':') {stop = true}
+            i += 1
+        }
+        while (i < line.length) {
+            recur += line(i)
+            i += 1
+        }
+
+        if (line.contains("UNTIL=")) {
+            var temp = ""
+            var new_until = ""
+            var t_count = 0
+            val regex = recur.split(";")
+            until = get_Until(line)
+            for (j <- 0 until regex.length) {
+                if (regex(j).contains("UNTIL=")) {
+                    var k = 0
+                    var break = false
+                    while (!break) {
+                        if (k < regex(j).length && regex(j)(k) == 'T') {
+                            t_count += 1
+                        }
+                        if (k == regex(j).length || t_count == 2) {
+                            break = true
+                        }
+                        else {
+                        new_until += regex(j)(k)
+                        }
+                        k += 1
+                    }
+                    temp += (new_until + ";")
+                }
+                else {
+                    temp += (regex(j) + ";")
+                }
+            }
+            recur = temp
+            if(t_count > 1){
+                stop_at_until = true
+            }
+        }
+
+
+        var year = 0
+        var month = 0
+        var day = 0
+        val date = start.split("/")
+        year = date(2).toInt
+        month = date(0).toInt - 1 /*0 based*/
+        day = date(1).toInt
+
+        val rule = new RecurrenceRule(recur, RfcMode.RFC2445_LAX)
+        val begin = new DateTime(year, month, day)
+
+        val iter = rule.iterator(begin)
+        var temp = ""
+        while (iter.hasNext && !rule.isInfinite) {
+            temp = iter.nextDateTime().toString
+            if(!stop_at_until || temp != until){
+                rrule_wating.enqueue(temp)
+            }
+
+        }
+    }
+
+    def get_Until(line:String):String ={
+        var l = line.split(";")
+        var s = ""
+        for(i <- l){
+            if(i.contains("UNTIL")){
+                var ll = i.split("=")
+                s = ll(1).split("T")(0)
+                return s
+            }
+        }
+        s
+    }
+
+    def find_ical_date(line: String): String = {
+        var l: Array[String] = Array()
+        var d = ""
+        if(line.contains(":")){
+            l = line.split(":")
+            d = l(1)
+        }
+        else{
+            d = line
+        }
+        l = d.split("T")
+        d = l(0)
+        d
+    }
+
+        def find_ical_date_with_time(line: String): String = {
+        var l: Array[String] = Array()
+        var d = ""
+        if(line.contains(":")){
+            l = line.split(":")
+            d = l(1)
+        }
+        else{
+            d = line
+        }
+        var t = ""
+        l = d.split("T")
+        d = l(0)
+        var i = 0
+        if(l.length > 1){
+            while(i < 4){
+                t+=l(1)(i)
+                i+=1
+            }
+            d+="T"+t
+        }
+        d
+    }
+
+    def monthYear(str: String): String = {
+        val l = str.split("/")
+        val month = l(0)
+        val year = l(2)
+
+        val toReturn = month + "/" + year
+        toReturn
+    }
+
+    def find_place_in_list(month:String, day:String): Int = {
+        val list = eligible_insert
+        var pos = 0
+        var i = 0
+        var mon = ""
+        var break = false
+        var toReturn = 0
+        while(!break){
+            mon = list(i).split("/")(0)
+            if(mon == month){
+                toReturn += day.toInt
+                break = true
+            }
+            else{
+                toReturn += month_lengths(mon.toInt)
+            }
+            i+=1
+        }
+        toReturn
+    }
+
+    def insert(towrite: Elements, exdate: List[String]): Unit = {
+        var ical = ""
+        var decoded = ""
+        var recur_id = ""
+
+        /*to add to hash*/
+        var array: Array[String] = null
+        var year = ""
+        var month = ""
+        var element: Elements = null
+        while (rrule_wating.nonEmpty) {
+            ical = rrule_wating.dequeue()
+            recur_id = encode_recurrence_id(ical, towrite.start)
+            if(!exdate.contains(ical) && !recurrenceID.contains(recur_id)){
+                decoded = decode_ical(ical)(0)
+                array = decoded.split("/")
+                year = array(2)
+                month = array(0)
+                
+                if (eligible_insert.contains(monthYear(decoded))) {
+                    element = towrite.copy(decoded)
+                    hash(find_place_in_list(array(0), array(1))) +:= element
+                }
+            }
+            else if(recurrenceID.contains(recur_id)){
+                recurrenceID -= recur_id
+            }
+        }
+        
+    }
+
+    def encode_recurrence_id(ical: String, start: String): String = {
+        if (start != null) {
+            ical+"T"+start
+        }
+        else {
+            ical
+        }
+    }
+
+    def date_to_ical(date: String, start: String): String = {
+        var l = date.split("/")
+        var ical:String = l(2)+l(0)+l(1)
+        if(start != null){
+            ical += "T"+start
+        }
+        ical
+    }
+
+    def sort(key_words: List[String]): Unit = {
+        var least: Elements = null
+        var new_day: ListBuffer[Elements] = new ListBuffer[Elements]
+
+        // var todo: ListBuffer[List[String]] = new ListBuffer[List[String]]/
+        var key_word_hash: Array[ListBuffer[Elements]] = Array.fill[ListBuffer[Elements]](key_words.length)(ListBuffer[Elements]())
+        var event: Elements = null
+        var index = 0
+        for (day <- hash.indices) {
+            while (hash(day).nonEmpty) {
+                val events = hash(day).iterator
+                while (events.hasNext) {
+                    event = events.next()
+                    
+                    if (event.all_day) {
+                        if(key_words.contains(event.todo)){
+                            index = key_words.indexOf((event.todo))
+                            key_word_hash(index)+= event
+                            hash(day).remove(hash(day).indexOf(event))
+                        }
+                        else{
+                            new_day += add_remove(event, day)
+                        }
+                    }
+                    else if ((least == null || event.start.toInt < least.start.toInt)) {
+                        least = event
+                    }
+                }
+                if(least != null && least.nonEmpty){
+                    new_day += add_remove(least, day)
+                }
+                least = null
+            }
+            if(key_word_hash.nonEmpty){
+                for(day <- key_word_hash.reverse){
+                    for(event <- day){
+                        new_day +:= event
+                    }
+                }
+
+            }
+            hash(day) = new_day
+            new_day = new ListBuffer[Elements]
+            key_word_hash = Array.fill[ListBuffer[Elements]](key_words.length)(ListBuffer[Elements]()) 
+        }
+
+    }
+
+    def add_remove(least: Elements, day: Int): Elements = {
+        if (hash(day).nonEmpty) {
+            hash(day).remove(hash(day).indexOf(least))
+        }
+        least
+    }
+
+    def print_hash(): Unit = {
+        /*helpful print*/
+        var find: List[String] = List()
+        println()
+        for (i <- hash.indices) {
+            if(i != 0){
+                find = find_date(i)
+                println("******" + find(0) + "/" + find(1) + "******")
+                println()
+                for (j <- hash(i)) {
+                    j.print()
+                }
+                println()
+            }
+        }
+    }
+
+    def find_date(day_of_year: Int): List[String] = {
+        var cur = day_of_year
+        var mon = 1
+        var day = 1
+        var year = 0
+        var sub = 0
+        var day_str = "" 
+        var mon_str = ""
+        var year_str = ""
+        
+        var break = false
+        var list = eligible_insert
+        var i = 0
+        while(!break){
+            mon = list(i).split("/")(0).toInt
+            sub = cur - month_lengths(mon)
+            if(sub <= 0){
+                mon_str = add_zero(mon.toString())
+                day_str = add_zero(cur.toString())
+                year_str = list(i).split("/")(1)
+                break = true
+            }
+            else{
+                cur -= month_lengths(mon).toInt
+            }
+
+            i+=1
+        }
+        List(mon_str, day_str, year_str)
+    }
+
+    def write(out: String): Unit = {
     val inputFile = scala.io.Source.fromFile(out)
 
     var list = new ListBuffer[String]
@@ -500,11 +642,8 @@ object parse_help {
       }
     }
     inputFile.close()
-    var find: List[String] = List()
+    var find: List[String] = null
     var key = ""
-    val start = 2
-    val end = 3
-    var not_all = false
     val outputFile = new BufferedWriter(new FileWriter(out))
 
     /*write pre-existing to file*/
@@ -515,46 +654,40 @@ object parse_help {
     outputFile.write("\n\treturn {")
 
     /*loop hash table*/
-    for (i <- hash.indices) {
+    for (i <- Range(1, hash.length)) {
       /*find date string*/
-      if (i != 0) {
-        find = find_date(i)
-        key = find(0) + "/" + find(1) + "/" + parse_cal.current_year
-      }
-      else {
-        key = parse_cal.new_years_day
-      }
+      
+      find = find_date(i)
+      key = find(0) + "/" + find(1) + "/" + find(2)
+
       /*value is a list of lists*/
       outputFile.write("\n\t\t\"" + key + "\": [")
 
       /*loop through days events*/
-      for (j <- hash(i).indices) {
-        outputFile.write("[")
+      for (event <- hash(i)) {
+        outputFile.write("{")
 
-        not_all = false
-
-        /*loop through event elements*/
-        for (k <- hash(i)(j).indices) {
-
-          /*convert to hyperlink*/
-          if (hash(i)(j)(k).contains("https") || hash(i)(j)(k).contains("www.")) {
-            outputFile.write(hyper_link(hash(i)(j)(k)))
-          }
-          /*write as plain text*/
-          else {
-            outputFile.write("\"" + hash(i)(j)(k) + "\"")
-          }
-
-          /*add comma*/
-          if (k < hash(i)(j).length - 1) {
-            outputFile.write(", ")
-          }
+        outputFile.write("\"summary\": " + add_quotes(event.summary) + ", ")
+        outputFile.write("\"all_day\": " + event.all_day + ", ")   
+        outputFile.write("\"todo\": " + add_quotes(event.todo) + ", ")
+        outputFile.write("\"start\": " + event.start + ", ")
+        outputFile.write("\"end\": " + event.end + ", ")
+        if(event.location != null && (event.location.contains("https://") || event.location.contains("www.") || event.location.contains("http://"))){
+          outputFile.write("\"location\": "  + hyper_link(event.location) + ", ")
         }
-        if (j < hash(i).length - 1) {
-          outputFile.write("],\n\t\t\t\t\t\t")
+        else if(event.location != null) {
+            outputFile.write("\"location\": " + add_quotes(event.location) + ", ")
+        }
+        else{
+            outputFile.write("\"location\": " + event.location + ", ")
+        }
+        outputFile.write("\"description\": " + add_quotes(event.description))
+
+        if (event != hash(i).last) {
+          outputFile.write("},\n\t\t\t\t\t\t")
         }
         else {
-          outputFile.write("]")
+          outputFile.write("}")
         }
       }
       if (i < hash.length - 1) {
@@ -563,8 +696,6 @@ object parse_help {
       else {
         outputFile.write("]")
       }
-
-
     }
     outputFile.write("\n\t}")
     outputFile.write("\n}\n")
@@ -580,20 +711,46 @@ object parse_help {
     for(weather <- weather_5){
       count+=1
       key = weather.last
-      outputFile.write("\n\t\t\"" + key + "\": [")
-      for(elem <- weather){
-        if(elem != key){
-          outputFile.write(elem + ",")
+      outputFile.write("\n\t\t\"" + key + "\": {")
+      if(count == 1){
+        for(elem <- weather.indices){
+          if(weather(elem) != key){
+            if(elem == 0){
+              outputFile.write("\"high\": " + weather(elem) + ", ")
+              outputFile.write("\"low\": null, ")
+            }
+            else if(elem == 1){
+              outputFile.write("\"forecast\": "+  weather(elem) + ", ")
+            }
+            else if(elem == 2){
+              outputFile.write("\"icon\": " + weather(elem))
+            }
+          }
         }
-        else{
-          outputFile.write("\"" + elem + "\"")
+      }
+      else{
+        for(elem <- weather.indices){
+          if(weather(elem) != key){
+            if(elem == 0){
+              outputFile.write("\"high\": " + weather(elem) + ", ")
+            }
+            else if(elem == 1){
+              outputFile.write("\"low\": " + weather(elem) + ", ")
+            }
+            else if(elem == 2){
+              outputFile.write("\"forecast\": " + weather(elem) + ", ")
+            }
+            else if(elem == 3){
+              outputFile.write("\"icon\": " + weather(elem))
+            }
+          }
         }
       }
       if(weather != weather_5.last){
-        outputFile.write("],")
+        outputFile.write("},")
       }
       else{
-        outputFile.write("]")
+        outputFile.write("}")
       }
     }
 
@@ -602,45 +759,53 @@ object parse_help {
     outputFile.close()
   }
 
-  def hyper_link(hyperlink: String): String = {
-    var link = hyperlink
-    if(!hyperlink.contains("https")){
-      link = "https://" + hyperlink
-    }
-    var html = "\"<a href=\\\"" + link + "\\\" id=\\\"link\\\" onclick=\\\"link()\\\">"
-
-    /*skip https:\\*/
-    var i = 8
-    val sep = link.split('.')
-    var temp = ""
-    var list = sep
-    var stop = false
-    if (sep.length != 2) {
-      temp = sep(1)
-      if(temp.toLowerCase() == "google" || temp.toLowerCase() == "buffalo"){
-        temp = sep(0)
-        var new_sep = temp.split('/')
-        temp = new_sep.last
-      }
-      html += temp.capitalize
-    }
-    /*find name*/
-    else {
-      while (!stop) {
-        if (link(i) != '.') {
-          temp += link(i)
+    def hyper_link(hyperlink: String): String = {
+        var link = hyperlink
+        if(!hyperlink.contains("https")){
+            link = "https://" + hyperlink
         }
+        var html = "\"<a href=\\\"" + link + "\\\" id=\\\"link\\\" onclick=\\\"link()\\\">"
+
+        /*skip https:\\*/
+        var i = 8
+        val sep = link.split('.')
+        var temp = ""
+        var list = sep
+        var stop = false
+        if (sep.length != 2) {
+            temp = sep(1)
+        if(temp.toLowerCase() == "google" || temp.toLowerCase() == "buffalo"){
+            temp = sep(0)
+            var new_sep = temp.split('/')
+            temp = new_sep.last
+        }
+        html += temp.capitalize
+        }
+        /*find name*/
         else {
-          stop = true
+        while (!stop) {
+            if (link(i) != '.') {
+                temp += link(i)
+            }
+            else {
+                stop = true
+            }
+
+            i += 1
+        }
+        html += temp.capitalize
         }
 
-        i += 1
-      }
-      html += temp.capitalize
+        html += "</a>\""
+        html
     }
 
-    html += "</a>\""
-    html
-  }
-
+    def add_quotes(str: String): String = {
+        if(str == null){
+            return "null"
+        }
+        else{
+            return "\"" + str + "\""
+        }
+    }
 }

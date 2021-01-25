@@ -2,13 +2,16 @@
 <html>
 <head>
     <title>New Tab</title>
+    <link rel="shortcut icon" type="image/png" href="../images/favicon.png">
 </head>
-<body style="background-color:rgba(14, 14, 14);" onload="run(); wind(); cal_icon(); start_color(); ">
+<body style="background: #0e0e0e" onload="run(); wind(); cal_icon(); start_color(); ">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <script type="text/javascript" src="../js/code.js"></script>
 <script type="text/javascript" src="../js/agenda.js"></script>
+<canvas id="c"></canvas>
+
 <div class="wrap">
     <div class="search">
         <input type="text" class="searchTerm" placeholder="Search Google" onkeypress="clickyClick()" autocomplete="off"
@@ -17,13 +20,18 @@
             <i class="fa fa-search"></i>
         </button>
     </div>
-    <div id=google>
-        <img src="../images/google.png">
+    <div id=google >
+        <img id='img_google' src="../images/google.png" style="height: 100px; width:300px">
     </div>
 </div>
 
 
 <style>
+    #c{
+        position: fixed;
+        /* background-color: #0e0e0e; */
+        /* visibility: hidden; */
+    }
 
     ::placeholder {
         color: #383838;
@@ -37,7 +45,6 @@
         margin-right: auto;
         position: relative;
         outline: none;
-
     }
 
     .searchTerm {
@@ -46,11 +53,10 @@
         padding: 5px;
         height: 22.5px;
         border-radius: 15px 0 0 15px;
-        background: #0e0e0e;
+        background: rgb(0,0,0,0);
         outline: none;
         font-family: Orbitron-light;
         color: #383838;
-
     }
 
     .searchTerm:focus {
@@ -83,7 +89,7 @@
         display: block;
         width: 300px;
         height: 100px;
-        position: relative;
+        /* position: relative; */
         margin-top: 10px;
         user-select: none;
         -webkit-user-drag: none;
@@ -91,24 +97,25 @@
         margin-right: auto;
         top: -180px;
     }
+    #img_google{
+        position: relative;
+    }
 </style>
 
 <div id="icons">
     <div id="user">
-        <input type="image" alt="apps" onclick="userToggle()" height="36" width="36" id="pic" src="../images/profile.png">
+        <input type="image" alt="apps" onclick="userToggle()" height="36" width="36" id="pic" src="../images/profile.png"/>
 
         <div id="logins" style="visibility:hidden">
             <div id="space1">
                 <img src="../images/space.png"/>
             </div>
-            <div id="user1">
-                <div>
-                    <a href="custom_tab_usr_1.html" type="checkbox" onclick="user_clicked_on()"/>
-                    <img src="../images/ub.png" width="36" height="36"/>
+            <div>
+                <div id="user1">
+                    <img id="img_user1"src="../images/ub.png" width="36" height="36" onclick="first_tab()"/>
                 </div>
                 <div id="user2">
-                    <a href="custom_tab_usr_2.html" type="checkbox" onclick="user_clicked_on()"/>
-                    <img src="../images/anon.png" width="36" height="36"/>
+                    <img src="../images/anon.png" width="36" height="36" onclick="second_tab()"/>
                 </div>
             </div>
             <style>
@@ -119,8 +126,7 @@
                     height: 36px;
                     margin-left: 120px;
                     -webkit-user-drag: none;
-                    -webkit-border-radius: 50px 50px;
-
+                    border-radius: 50px 50px;
 
                 }
 
@@ -129,9 +135,9 @@
                     position: relative;
                     top: 0px;
                     -webkit-user-drag: none;
-                    -webkit-border-radius: 50px 50px;
+                    border-radius: 50px 50px;
                     left: -1px;
-
+                    cursor: pointer;
                 }
 
                 #user2 img {
@@ -139,13 +145,14 @@
                     position: relative;
                     top: 11px;
                     -webkit-user-drag: none;
-                    -webkit-border-radius: 50px 50px;
+                    border-radius: 50px 50px;
+                    cursor: pointer;
                 }
 
                 #pic {
                     outline: none;
                     -webkit-user-drag: none;
-
+                    cursor: pointer;
                 }
 
             </style>
@@ -155,8 +162,8 @@
     </div>
     <div id=gmail>
         <p>
-            <a href="https://mail.google.com/mail/u/0/#inbox">
-                <img alt="gmail" src="../images/gmail.png" height="23" width="35">
+            <a id="email_link" href="https://mail.google.com/mail/u/0/#inbox">
+                <img id="email" alt="gmail" src="../images/gmail.png" height="23" width="35">
             </a>
         </p>
     </div>
@@ -204,6 +211,10 @@
                 <div id="drive">
                     <a href="https://drive.google.com/drive/u/0/my-drive" type="checkbox" onclick="app_clicked_on()"/>
                     <img src="../images/drive.png" width="33" height="33"/>
+                </div>
+                <div id="password">
+                    <a href="https://passwords.google.com/" type="checkbox" onclick="app_clicked_on()"/>
+                    <img src="../images/password.png" width="36" height="36"/>
                 </div>
                 <div id="space">
                     <a> </a>
@@ -270,6 +281,15 @@
                 margin-left: -20px;
                 -webkit-user-drag: none;
                 filter: saturate(8);
+            }
+            #drive{
+                -webkit-user-drag: none;
+                margin-left: -20px;
+            }
+            #password{
+                margin-top: -40px;
+                -webkit-user-drag: none;
+                margin-left: 20px;
             }
             #app_1{
                 margin-top: 5px;
@@ -342,16 +362,13 @@
 
     }
 
-    #date_time {
-        /* width: 400px; */
-    }
 
     #date {
         margin-left: 20px;
         user-select: none;
         margin-top: -60px;
         position: absolute;
-        width: 400px;
+        width: 350px;
         height: 0px;
     }
 
@@ -361,7 +378,11 @@
         color: #303030;
         font-family: Orbitron-bold;
         user-select: none;
-
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 340px;
+        display: block;
+        overflow: hidden
     }
 
     #cal_location {
@@ -370,6 +391,11 @@
         font-family: Orbitron-light;
         user-select: none;
         color: #303030;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 340px;
+        display: block;
+        overflow: hidden
     }
 
     #start_end {
@@ -378,12 +404,12 @@
         color: #303030;
         font-family: Orbitron;
         user-select: none;
-
+        width: 350px;
     }
 
     #calendar {
         margin-top: 100px;
-        width: 400px;
+        width: 350px;
         height: 80px;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
@@ -403,6 +429,7 @@
         margin-top: -470px;
         margin-left: 20px;
         user-select: none;
+        position: absolute;
     }
 
     #summary {
@@ -410,6 +437,11 @@
         font-family: Orbitron-bold;
         color: #0e0e0e;
         user-select: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 340px;
+        display: block;
+        overflow: hidden
     }
 
     #loc {
@@ -417,6 +449,11 @@
         font-family: Orbitron-light;
         color: #0e0e0e;
         user-select: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 340px;
+        display: block;
+        overflow: hidden
     }
 
     @font-face {
@@ -440,8 +477,107 @@
     }
 </style>
 
-</body>
+<div id="description_container" onclick="description_clicked_on()">
+    <div id="desc_con">
+        <div id="description"></div>
+    </div>
+    <div class="red_dot" onclick="document.getElementById('description_container').style.visibility = 'hidden'"></div>
+    <style>
+        .dot {
+            height: 15px;
+            width: 15px;
+            background-color: #383838;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+        }
+        .dot_cont {
+            padding-right: 3px;
+        }
+        #description_container{
+            background-color:  #151515;
+            width: 350px;
+            height: 560px;
+            margin-left: 10px;
+            bottom: 0;
+            margin-bottom: 125px;
+            position: absolute;
+            border-radius: 10px;
 
+            visibility: hidden;  
+            
+        }
+        #desc_con{
+            background-color: #151515;
+            width: 310px;
+            height: 520px;
+            margin-left: 20px;
+            margin-top: 20px;
+            overflow: hidden;
+            overflow-y:scroll;
+            position: absolute;
+        }
+        #description{
+            width: 310px;
+            font-size: 18px;
+            font-family:'Courier New', Courier, monospace;
+            color:#a1a1a1;
+            position: absolute;
+        }
+        .red_dot{
+            position: absolute;
+            height: 15px;
+            width: 15px;
+            background-color: #be0000;
+            border-radius: 50%;
+            margin-right: 5px;
+            margin-top: 5px;
+            display: inline-block;
+            right: 0;
+            cursor: pointer;
+        }
+        #desc_con::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        #desc_con::-webkit-scrollbar-thumb {
+            background: #303030;
+            border-radius: 20px;
+        }
+
+        #desc_con::-webkit-scrollbar-track {
+            background: #0e0e0e;
+            border-radius: 20px;
+        }
+        a{
+            color: #0f99e3;
+        }
+        .attachment{
+            height: 25px;
+            width: 310px;
+            overflow: hidden;
+            border-radius: 5px;
+            margin-top: 2px;
+        }
+        .attach_image{
+            margin-top: 4px;
+            margin-left: 2px;
+        }
+        .attach_name{
+            width: 80px;
+            margin-left: 18px;
+            margin-top: -20px;
+            white-space: nowrap;
+            color: #0f99e3;
+        }
+        .no_underline{
+            text-decoration: none;
+        }
+    </style>
+</div>
+
+</body>
 
 <style>
     body {
