@@ -1,5 +1,6 @@
 key = ""; /*key for dictionary*/
 current = null; /*list for current event*/
+now = null
 current_i = -1;
 next_i = -1;
 next = null; /*list for next event*/
@@ -22,35 +23,9 @@ sec = null; /*for delay*/
 
 sec_reset = -1;
 
-function run() {
-  updateTime();
-  set_all_day();
-  setInterval(updateTime, 250);
-}
 function updateTime() {
-  var months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  var week = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  var months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", ];
+  var week = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", ];
   var datetime = new Date();
 
   var month_num = datetime.getMonth();
@@ -84,7 +59,10 @@ function updateTime() {
   document.getElementById("month").innerHTML = date;
   document.getElementById("month").style.fontFamily = "Orbitron-light";
 
-  get_events(key, time_24);
+  if(current == null || (!to_tomorrow && parseInt(time_24) > now["end"])){
+    get_events(key, time_24);
+    listeners()
+  }
   reset_toggleCal(seconds);
 }
 
@@ -198,7 +176,7 @@ function get_events(key, time) {
       }
       format_events();
     } else {
-      current = null;
+      current = tomorrow_key();
       to_tomorrow = true;
       event_key = tomorrow_key();
       set_tomorrow(tomorrow_key());
@@ -217,14 +195,11 @@ function format_events() {
   dict = dictionary();
   if (!to_next && current_i != -1) {
     current = dict[key][current_i];
+    now = current
     all_day = current["all_day"];
     todo = current["todo"];
     if (current["description"] !== null) {
-      name =
-        "<span class='dot_cont'><div id='dot_cur' class='dot' onclick=\"link_clicked = true; description_clicked_on(); show_description(" +
-        current_i +
-        ', false)"></div></span>' +
-        current["summary"];
+      name = "<span class='dot_cont'><div id='dot_cur' class='dot' ></div></span>" + current["summary"];
     } else {
       name = current["summary"];
     }
@@ -240,10 +215,7 @@ function format_events() {
     name = next["summary"];
     if (next["description"] !== null) {
       name =
-        "<span class='dot_cont'><div id='dot_next' class='dot' onclick=\"link_clicked = true; description_clicked_on(); show_description(" +
-        next_i +
-        ', false)"></div></span>' +
-        next["summary"];
+        "<span class='dot_cont'><div id='dot_next' class='dot'></div></span>" + next["summary"];
     } else {
       name = next["summary"];
     }
@@ -255,6 +227,8 @@ function format_events() {
 }
 
 function set_event(all_day, todo, name, start, end, location) {
+  let color = "#383838"
+  let next_color = "#282828"
   if (!all_day) {
     var duration = get_12_hour_int(start) + " - " + get_12_hour_int(end);
   } else {
@@ -262,10 +236,22 @@ function set_event(all_day, todo, name, start, end, location) {
       duration = "All Day";
     } else if (todo == "TODO") {
       duration = "To Do";
-    } else if (todo == "Work") {
+    } else if (todo == "WORK") {
       duration = "Work";
+    } else if (todo == "EXAM"){
+      duration = "Exam"
     }
+
   }
+  if (location != "Tomorrow" && todo == "TODO") {
+    color = "#ff9900"
+    next_color = "#c97900"
+  } 
+  else if (location != "Tomorrow" && todo == "EXAM"){
+    color = "#bd0000"
+    next_color = "#912727"
+  }
+
   if (location === null) {
     document.getElementById("cal_name").innerHTML = "place_holder";
     document.getElementById("cal_location").innerHTML = name; /*shift down*/
@@ -282,18 +268,18 @@ function set_event(all_day, todo, name, start, end, location) {
   }
 
   if (!to_next) {
-    document.getElementById("cal_name").style.color = "#303030";
-    document.getElementById("cal_location").style.color = "#303030";
-    document.getElementById("start_end").style.color = "#303030";
+    document.getElementById("cal_name").style.color = color;
+    document.getElementById("cal_location").style.color = color;
+    document.getElementById("start_end").style.color = color;
     if (document.getElementById("dot_cur") !== null) {
-      document.getElementById("dot_cur").style.backgroundColor = "#303030";
+      document.getElementById("dot_cur").style.backgroundColor = color;
     }
   } else {
-    document.getElementById("cal_name").style.color = "#262626";
-    document.getElementById("cal_location").style.color = "#262626";
-    document.getElementById("start_end").style.color = "#262626";
+    document.getElementById("cal_name").style.color = next_color;
+    document.getElementById("cal_location").style.color = next_color;
+    document.getElementById("start_end").style.color = next_color;
     if (document.getElementById("dot_next") !== null) {
-      document.getElementById("dot_next").style.backgroundColor = "#262626";
+      document.getElementById("dot_next").style.backgroundColor = next_color;
     }
   }
   if (location === null) {
@@ -310,17 +296,21 @@ function toggleCal() {
     if (!to_next && dict[key].length > current_i + 1) {
       to_next = true;
       next_i = current_i + 1;
-      sec_reset = add_60(s);
+      sec_reset = add_15(s);
     } else if (to_next && dict[key].length > next_i + 1) {
       next_i += 1;
-      sec_reset = add_60(s);
+      sec_reset = add_15(s);
     } else {
       to_next = false;
       sec_reset = -1;
     }
     format_events();
+    listeners()
   } else if (!to_tomorrow) {
     link_clicked = false;
+  }
+  else{
+    tomorrow_toggle()
   }
 }
 
@@ -332,9 +322,14 @@ function reset_toggleCal(seconds) {
   }
 }
 
-function add_60(t) {
+function add_15(t) {
   int = parseInt(t);
-  int -= 1;
+  if(int+15 > 59){
+    int-=45
+  }
+  else{
+    int+=15
+  }
   return int;
 }
 
@@ -356,6 +351,7 @@ function tomorrow_toggle() {
     } else {
       current_tomorrow = 0;
     }
+    current = null
   } else if (to_tomorrow) {
     link_clicked = false;
   }
@@ -363,11 +359,11 @@ function tomorrow_toggle() {
 function set_tomorrow(key) {
   var dict = dictionary();
   if (dict[key].length > 0) {
-    document.getElementById("cal_name").style.color = "#303030";
+    document.getElementById("cal_name").style.color = "#383838";
     document.getElementById("cal_name").style.opacity = "1";
-    document.getElementById("cal_location").style.color = "#303030";
+    document.getElementById("cal_location").style.color = "#383838";
     document.getElementById("cal_location").style.opacity = "1";
-    document.getElementById("start_end").style.color = "#303030";
+    document.getElementById("start_end").style.color = "#383838";
     document.getElementById("cal_location").style.opacity = "1";
 
     var all_day = dict[key][current_tomorrow]["all_day"];
@@ -375,10 +371,7 @@ function set_tomorrow(key) {
     var name = "";
     if (dict[key][current_tomorrow]["description"] !== null) {
       name =
-        "<span class='dot_cont'><div id='dot_cur' class='dot' onclick=\"link_clicked = true; description_clicked_on(); show_description(" +
-        current_tomorrow +
-        ', false)"></div></span>' +
-        dict[key][current_tomorrow]["summary"];
+        "<span class='dot_cont'><div id='dot_cur' class='dot'></div></span>" + dict[key][current_tomorrow]["summary"];
     } else {
       name = dict[key][current_tomorrow]["summary"];
     }
@@ -419,16 +412,12 @@ function getRandomInt(max) {
 
 function set_all_day() {
   dict = dictionary();
-
   if (_all_day !== 0 && dict[key].length != 0) {
     let summary = "";
     all_key = key;
     if (dict[key][all_day_current]["description"] !== null) {
       summary =
-        "<span class='dot_cont'><div id='all_dot' class='dot' onclick=\"link(); description_clicked_on(); show_description(" +
-        all_day_current +
-        ', true)"></div></span>' +
-        dict[key][all_day_current]["summary"];
+        "<span class='dot_cont'><div id='all_dot' class='dot'></div></span>" + dict[key][all_day_current]["summary"];
     } else {
       summary = dict[key][all_day_current]["summary"];
     }
@@ -438,7 +427,7 @@ function set_all_day() {
 
     if (dict[key][all_day_current]["todo"] == "TODO") {
       document.getElementById("summary").style.color = "#ff9900";
-      if (document.getElementById("all_dot") !== undefined) {
+      if (document.getElementById("all_dot") !== null) {
         document.getElementById("all_dot").style.backgroundColor = "#ff9900";
       }
     } else if (dict[key][all_day_current]["todo"] == "WORK") {
@@ -446,10 +435,17 @@ function set_all_day() {
       if (document.getElementById("all_dot") !== null) {
         document.getElementById("all_dot").style.backgroundColor = "#ffee00";
       }
-    } else {
-      document.getElementById("summary").style.color = "#303030";
+    }
+    else if (dict[key][all_day_current]["todo"] == "EXAM") {
+      document.getElementById("summary").style.color = "#bd0000";
       if (document.getElementById("all_dot") !== null) {
-        document.getElementById("all_dot").style.backgroundColor = "#303030";
+        document.getElementById("all_dot").style.backgroundColor = "#bd0000";
+      }
+    } 
+    else {
+      document.getElementById("summary").style.color = "#383838";
+      if (document.getElementById("all_dot") !== null) {
+        document.getElementById("all_dot").style.backgroundColor = "#383838";
       }
     }
     if (dict[key][all_day_current]["location"] !== null) {
@@ -459,8 +455,11 @@ function set_all_day() {
         document.getElementById("loc").style.color = "#ff9900";
       } else if (dict[key][all_day_current]["todo"] == "WORK") {
         document.getElementById("loc").style.color = "#ffee00";
-      } else {
-        document.getElementById("loc").style.color = "#303030";
+      } 
+      else if (dict[key][all_day_current]["todo"] == "EXAM") {
+        document.getElementById("loc").style.color = "#bd0000";
+      }else {
+        document.getElementById("loc").style.color = "#383838";
       }
       document.getElementById("loc").style.opacity = "1";
     } else {
@@ -473,6 +472,7 @@ function set_all_day() {
     document.getElementById("summary").style.opacity = "0";
     document.getElementById("loc").style.opacity = "0";
   }
+  listeners()
 }
 function rotate() {
   if (all_day_current + 1 < _all_day) {
@@ -497,6 +497,7 @@ function to_pointer() {
 }
 
 function show_description(i, all) {
+  link()
   var dict = dictionary();
   if (!all) {
     var text =
@@ -512,8 +513,8 @@ function show_description(i, all) {
       "</b>" +
       "<br> <br>" +
       dict[all_key][i]["description"];
+      console.log(dict[all_key][i]["description"])
   }
-
   document.getElementById("description").innerHTML = text;
   document.getElementById("description_container").style.visibility = "visible";
 
@@ -534,10 +535,43 @@ function show_description(i, all) {
     document.getElementById("desc_con").style.overflowY = "auto";
   }
 }
-
-function dictionary() {
-	return 
+function hide_description(){
+  document.getElementById('description_container').style.visibility = 'hidden'
 }
-function weather() {
-	return 
+function cur_desc(){
+  description_clicked_on()
+  if(!to_tomorrow){
+    show_description(current_i, false)
+  }
+  else{
+    show_description(current_tomorrow, false)
+  }
+}
+function next_desc(){
+  description_clicked_on()
+  show_description(next_i, false)
+
+}
+function all_desc(){
+  // link()
+  description_clicked_on()
+  show_description(all_day_current, true)
+}
+
+function listeners(){
+  if(document.getElementById("link") != null){
+    document.getElementById("link").addEventListener("click", link);
+  }
+  if(document.getElementById("loc") != null){
+    document.getElementById("loc").addEventListener("click", link);
+  }
+  if(document.getElementById("dot_cur") != null){
+    document.getElementById("dot_cur").addEventListener("click", cur_desc);
+  }
+  if(document.getElementById("dot_next") != null){
+    document.getElementById("dot_next").addEventListener("click", next_desc);
+  }
+  if(document.getElementById("all_dot") != null){
+    document.getElementById("all_dot").addEventListener("click", all_desc);
+  }
 }

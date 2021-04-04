@@ -283,7 +283,7 @@
         }
         #desc_con{
             background-color: #151515;
-            width: 410px;
+            width: 420px;
             height: 520px;
             margin-left: 20px;
             margin-top: 20px;
@@ -348,9 +348,32 @@
             text-decoration: none;
         }
     </style>
-
+    <script>
+        function re(){
+            setInterval(resize, 1000)
+        }
+        function resize(){
+            if(window.innerWidth < 1000 || window.innerHeight > window.innerWidth){
+                document.getElementsByClassName("cal")[0].style.visibility = "hidden"
+                document.getElementById("arrows").style.visibility = "hidden"
+            }
+            else{
+                document.getElementsByClassName("cal")[0].style.visibility = "visible"
+                document.getElementById("arrows").style.visibility = "visible"
+            }
+            if( window.innerHeight < window.innerWidth){
+                dpi = window.devicePixelRatio
+                base = 1.25
+                dif = base - dpi
+                document.body.style.zoom = 1+dif
+            }
+            else if(window.devicePixelRatio == 1.5){
+                document.body.style.zoom = 1.35
+            }
+        }
+    </script>
 </head>
-<body style="background: #0e0e0e" onload="run()">
+<body style="background: #0e0e0e" onload="resize(); re(); run()">
 
 <div id="month"></div>
 
@@ -435,6 +458,7 @@
     <div class="red_dot" onclick="document.getElementById('description_container').style.visibility = 'hidden'"></div>
 </div>
 <script type="text/javascript" src="../js/calendar.js"></script>
+<script type="text/javascript" src="../js/events.js"></script>
 
 </body>
 </html>

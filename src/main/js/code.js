@@ -15,6 +15,7 @@ function clickyClick() {
   }
 }
 
+
 function search() {
   if (document.getElementById("comment").value !== "") {
     url =
@@ -110,7 +111,6 @@ function app_clicked_on() {
 }
 function description_clicked_on() {
   desc_clicked = true;
-  console.log("desc");
 }
 document.addEventListener("click", back_clicked);
 function back_clicked() {
@@ -185,47 +185,46 @@ function start_color() {
 profiles = ["../images/profile.png", "../images/ub.png", "../images/anon.png"];
 profile_info = {
   "../images/profile.png":
-    "<img src='../images/profile.png' width='36' height='36' onclick='main_tab()'/>",
+    "<img id='img_main' src='../images/profile.png' width='36' height='36'/>",
   "../images/ub.png":
-    "<img src='../images/ub.png' width='36' height='36' onclick='first_tab()'/>",
+    "<img id='img_user1' src='../images/ub.png' width='36' height='36'/>",
   "../images/anon.png":
-    "<img src='../images/anon.png' width='36' height='36' onclick='second_tab()'/>",
+    "<img id='img_user2' src='../images/anon.png' width='36' height='36'/>",
 };
 function main_tab() {
   icons =
-    "        <input type='image' src='../images/app_drawer.png' id='apps' onclick='appToggle()' height='33' width='33'> \n" +
+    "        <input type='image' src='../images/app_drawer.png' id='apps' height='33' width='33'> \n" +
     "\n" +
     "        <div id='Mydiv' style='display:none'>\n" +
     "\n" +
     "            <div id='app_1'>\n" +
     "                <div id='custom_cal'>\n" +
-    "                    <a href='../calendar/calendar.html' type='checkbox' onclick='app_clicked_on()'/>\n" +
     "                    <img class='calendarimg' src='https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png'\n" +
     "                         width='38' height='38'/>\n" +
     "                </div>\n" +
     "                <div id='cal'>\n" +
-    "                    <a href='https://calendar.google.com/calendar/' type='checkbox' onclick='app_clicked_on()'/>\n" +
+    "                    <a href='https://calendar.google.com/calendar/' type='checkbox' class='app'/>\n" +
     "                    <img class='calendarimg' src='https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png'\n" +
     "                         width='38' height='38'/>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "            <div id='app_2'>\n" +
     "                <div id='youtube'>\n" +
-    "                    <a href='https://www.youtube.com/' type='checkbox' onclick='app_clicked_on()'/>\n" +
+    "                    <a href='https://www.youtube.com/' type='checkbox' class='app'/>\n" +
     "                    <img alt='youtube' src='../images/youtube.png' width='33' height='33'/>\n" +
     "                </div>\n" +
     "                <div id='TV'>\n" +
-    "                    <a href='https://tv.youtube.com/' type='checkbox' onclick='app_clicked_on()'/>\n" +
+    "                    <a href='https://tv.youtube.com/' type='checkbox' class='app'/>\n" +
     "                    <img alt='TV' src='../images/youtube_tv.png' width='36' height='36'/>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "            <div id='app_3'>\n" +
     "                <div id='drive'>\n" +
-    "                    <a href='https://drive.google.com/drive/u/0/my-drive' type='checkbox' onclick='app_clicked_on()'/>\n" +
+    "                    <a href='https://drive.google.com/drive/u/0/my-drive' type='checkbox' class='app'/>\n" +
     "                    <img src='../images/drive.png' width='33' height='33'/>\n" +
     "                </div>\n" +
     "                <div id='password'>\n" +
-    "                    <a href='https://passwords.google.com/' type='checkbox' onclick='app_clicked_on()'/>\n" +
+    "                    <a href='https://passwords.google.com/' type='checkbox' class='app'/>\n" +
     "                    <img src='../images/password.png' width='36' height='36'/>\n" +
     "                </div>\n" +
     "                <div id='space'>\n" +
@@ -241,7 +240,7 @@ function main_tab() {
     "                position: relative;\n" +
     "                width: 33px;\n" +
     "                height: 33px;\n" +
-    "                top: -94.75px;\n" +
+    "                top: -80px;\n" +
     "                margin-left: 47px;\n" +
     "                -webkit-user-drag: none;\n" +
     "\n" +
@@ -293,6 +292,7 @@ function main_tab() {
     "                margin-left: -20px;\n" +
     "                -webkit-user-drag: none;\n" +
     "                filter: saturate(8);\n" +
+    "                cursor: pointer;\n" +
     "            }\n" +
     "            #drive{\n" +
     "                -webkit-user-drag: none;\n" +
@@ -324,44 +324,38 @@ function main_tab() {
   profile = "../images/profile.png";
   _top = "-470px";
   _left = "0px";
-  app_top = "-94.75px";
-  mail_top = "-48px";
+  app_top = "-86px";
+  mail_top = "-44px";
   l = "0";
   all_day = "-470px";
   all_day_left = "20px";
   drawthing(false);
-  set_tab(
-    icons,
-    color,
-    img,
-    height,
-    width,
-    profile,
-    email,
-    email_link,
-    icon_drawer,
-    _top,
-    _left,
-    app_top,
-    mail_top,
-    l,
-    all_day,
-    all_day_left
-  );
+  set_tab( icons, color, img, height, width, profile, email, email_link, icon_drawer, _top, _left, app_top, mail_top, l, all_day, all_day_left );
+  document.getElementById("img_user1").addEventListener("click", first_tab);
+  document.getElementById("img_user2").addEventListener("click", second_tab);
+  document.getElementById("apps").addEventListener("click", appToggle);
+  document.getElementById("custom_cal").addEventListener("click", calredirect);
+  document.querySelectorAll('.app').forEach(item => {
+      item.addEventListener('click', event => {
+        app_clicked_on()
+      })
+    })
+
+    history.replaceState(null,'');
 }
 
 function first_tab() {
   icons =
-    '        <input type="image" src="../images/app_drawer_UB.png" id="apps" onclick="appToggle()" height="33" width="33"/>\n' +
+    '        <input type="image" src="../images/app_drawer_UB.png" id="apps" height="33" width="33"/>\n' +
     "\n" +
     '        <div id="Mydiv" style="display:none">\n' +
     "\n" +
     '            <div id="drive">\n' +
-    '                <a href="https://drive.google.com/drive/u/1/my-drive" type="checkbox" onclick="app_clicked_on()"/>\n' +
+    '                <a href="https://drive.google.com/drive/u/1/my-drive" type="checkbox" class="app"/>\n' +
     '                <img src="../images/drive.png" width="33" height="33"/>\n' +
     "            </div>\n" +
     '            <div id="cal">\n' +
-    '                <a href="https://calendar.google.com/calendar/b/1/r" type="checkbox" onclick="app_clicked_on()"/>\n' +
+    '                <a href="https://calendar.google.com/calendar/b/1/r" type="checkbox" class="app"/>\n' +
     '                <img class="calendarimg" src="https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png" width="38" height="38"/>\n' +
     "            </div>\n" +
     '            <div id="space">\n' +
@@ -375,7 +369,7 @@ function first_tab() {
     "                position: relative;\n" +
     "                width: 33px;\n" +
     "                height: 33px;\n" +
-    "                top: -94.75px;\n" +
+    "                top: -86px;\n" +
     "                margin-left: 47px;\n" +
     "                -webkit-user-drag: none;\n" +
     "\n" +
@@ -422,44 +416,37 @@ function first_tab() {
   profile = "../images/ub.png";
   _top = "-490px";
   _left = "0px";
-  app_top = "-94.75px";
-  mail_top = "-48px";
+  app_top = "-86px";
+  mail_top = "-44px";
   l = "0";
   all_day = "-490px";
   all_day_left = "20px";
   drawthing(false);
-  set_tab(
-    icons,
-    color,
-    img,
-    height,
-    width,
-    profile,
-    email,
-    email_link,
-    icon_drawer,
-    _top,
-    _left,
-    app_top,
-    mail_top,
-    l,
-    all_day,
-    all_day_left
-  );
+  set_tab( icons, color, img, height, width, profile, email, email_link, icon_drawer, _top, _left, app_top, mail_top, l, all_day, all_day_left ); 
+  document.getElementById("img_main").addEventListener("click", main_tab);
+  document.getElementById("img_user2").addEventListener("click", second_tab);
+  document.getElementById("apps").addEventListener("click", appToggle);
+  document.querySelectorAll('.app').forEach(item => {
+      item.addEventListener('click', event => {
+        app_clicked_on()
+      })
+    })
+
+    history.replaceState({"user": "ub"},'');
 }
 
 function second_tab() {
   icons =
-    '        <input type="image" src="../images/app_drawer_glitch.png" id="apps" onclick="appToggle()" height="33" width="33"/>\n' +
+    '        <input type="image" src="../images/app_drawer_glitch.png" id="apps" height="33" width="33"/>\n' +
     "\n" +
     '        <div id="Mydiv" style="display:none">\n' +
     "\n" +
     '            <div id="drive">\n' +
-    '                <a href="https://drive.google.com/drive/u/2/my-drive" type="checkbox" onclick="app_clicked_on()"/>\n' +
+    '                <a href="https://drive.google.com/drive/u/2/my-drive" type="checkbox" class="app"/>\n' +
     '                <img src="../images/drive.png" width="33" height="33"/>\n' +
     "            </div>\n" +
     '            <div id="cal">\n' +
-    '                <a href="https://calendar.google.com/calendar/b/2/r" type="checkbox" onclick="app_clicked_on()"/>\n' +
+    '                <a href="https://calendar.google.com/calendar/b/2/r" type="checkbox" class="app"/>\n' +
     '                <img class="calendarimg" src="https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png" width="38" height="38"/>\n' +
     "            </div>\n" +
     '            <div id="space">\n' +
@@ -730,51 +717,29 @@ function second_tab() {
   profile = "../images/anon.png";
   _top = "-545px";
   _left = "-8px";
-  app_top = "-63px";
+  app_top = "-62px";
   mail_top = "-32px";
   l = "8px";
   all_day = "-545px";
   a_d_left = "28px";
-  set_tab(
-    icons,
-    color,
-    img,
-    height,
-    width,
-    profile,
-    email,
-    email_link,
-    icon_drawer,
-    _top,
-    _left,
-    app_top,
-    mail_top,
-    l,
-    all_day,
-    a_d_left
-  );
+  set_tab( icons, color, img, height, width, profile, email, email_link, icon_drawer, _top, _left, app_top, mail_top, l, all_day, a_d_left );
+  document.getElementById("img_main").addEventListener("click", main_tab);
+  document.getElementById("img_user1").addEventListener("click", first_tab);
+      document.getElementById("apps").addEventListener("click", appToggle);
+    document.querySelectorAll('.app').forEach(item => {
+        item.addEventListener('click', event => {
+          app_clicked_on()
+        })
+      })
+
+
   document.getElementById("img_google").style.position = "unset";
   drawthing(true);
+  history.replaceState({"user": "anon"},'');
 }
 
 function set_tab(
-  icons,
-  color,
-  img,
-  height,
-  width,
-  profile,
-  email,
-  email_link,
-  icon_drawer,
-  top,
-  left,
-  app_top,
-  mail_top,
-  l,
-  all_day,
-  all_day_left
-) {
+  icons, color, img, height, width, profile, email, email_link, icon_drawer, top, left, app_top, mail_top, l, all_day, all_day_left ) {
   dim = " id='img_google' style=height:" + height + ";width:" + width;
   document.getElementById("google").innerHTML =
     "<img src=" + img + dim + "></img>";
@@ -895,6 +860,17 @@ function drawthing(check) {
       const context = c.getContext("2d");
       context.clearRect(0, 0, c.width, c.height);
       c.style.visibility = "hidden";
+    }
+  }
+}
+
+function get_user(){
+  if(history.state != null){
+    if(history.state["user"] == "ub"){
+      first_tab()
+    }
+    else if(history.state["user"] == "anon"){
+      second_tab()
     }
   }
 }

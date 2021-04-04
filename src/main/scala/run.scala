@@ -1,15 +1,15 @@
-
+import scala.collection.mutable.ListBuffer
 object run {
   def main(args: Array[String]): Unit = {
     /*google calendar private link*/
     val myCal = ""
     
     /*open weather api key*/
-    val OpenWeatherApiKey = ""
+    val OpenWeatherApiKey = "8533b8668f13ad68d228a597e4e788d8"
     
     /*city ID*/
-    val OpenWeatherCityID = ""
-    val OpenWeatherCity = ""
+    val OpenWeatherCityID = "5110629"
+    val OpenWeatherCity = "Buffalo"
 
 
     val week = "http://api.openweathermap.org/data/2.5/forecast?id=" +OpenWeatherCityID+ "&APPID=" + OpenWeatherApiKey
@@ -18,13 +18,12 @@ object run {
     /*TODO if you don't want weather comment this line*/
     parse_weather.parse_weather(today, week)
 
+    val out = "src\\main\\js\\events.js"
+    val pi = "/home/pi/New_Tab/src/main/js/events.js"
 
-    /*Default timezone (get from ical file)*/
-    val default_timezone = ""
+    val default_timezone = "America/New_York"
     val terms = List("EXAM", "TODO", "WORK")
 
-    val out = "src\\main\\js\\agenda.js"
-    val cal = "src\\main\\js\\calendar.js"
-    parse_cal.parse(myCal, List(cal, out), default_timezone, terms)
+    parse_cal.parse(myCal, List(out, pi), default_timezone, terms)
   }
 }

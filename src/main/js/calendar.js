@@ -8,7 +8,7 @@ function run() {
     event_height = parseInt(window.getComputedStyle(document.getElementsByClassName("event_container")[0]).getPropertyValue('height'))
     updateTime()
     setInterval(updateTime, 100)
-
+    
 }
 
 let offset_check = false
@@ -47,7 +47,7 @@ function updateTime() {
     year = datetime.getFullYear();
     const day_of_week = week[datetime.getDay()];
     const date = day_of_week + ", " + month + " " + day;
-
+    
 	// go back to current day
 	milli = getMillis(datetime.getMilliseconds().toString())
 	if (clicked_day && datetime.getSeconds() === delay[0] && milli  == delay[1][0] ) {
@@ -197,6 +197,7 @@ function set_cal_dates(offset, month, year) {
     for (let i = offset - 1; i > 0; i--) {
         document.getElementById(i.toString()).innerText = prev_len.toString()
         document.getElementById(i.toString()).style.color = "#323232"
+        document.getElementById(i.toString()).style.borderColor = "#0f99e3"
         prev_len--
     }
     for (let i = 1; i <= month_lengths[month]; i++) {
@@ -219,6 +220,7 @@ function set_cal_dates(offset, month, year) {
         document.getElementById(i.toString()).innerText = end.toString()
         set_mini_weather(i, key_id(i))
         document.getElementById(i.toString()).style.color = "#323232"
+        document.getElementById(i.toString()).style.borderColor = "#0f99e3"
         end++
     }
 
@@ -284,7 +286,7 @@ function long_cal(offset, month_length, month, year) {
             adjust_weather_css(start, key)
             document.getElementById(start.toString()).innerHTML += "<div class=\"event _" + start + "_0\">" + dict[key][0]["summary"] + "</div>"
 
-            if (half_width >= 58) {
+            if (dict[key].length > 1 && half_width >= 58) {
                 document.getElementById(start.toString()).innerHTML += "<div class=\"event _" + start + "_0\">" + dict[key][1]["summary"] + "</div>"
 
                 document.getElementsByClassName("_" + start + "_0")[0].style.fontSize = "12px"
@@ -319,6 +321,7 @@ function long_cal(offset, month_length, month, year) {
         if (start >= last) {
             document.getElementsByClassName("extra")[j].innerHTML = day.toString()
             document.getElementsByClassName("extra")[j].style.color = "#323232"
+            document.getElementsByClassName("extra")[j].style.borderColor = "#0f99e3"
             set_mini_weather(start + 1, key_id(start + 1))
             day++
         }
@@ -540,6 +543,9 @@ function find_duration(start, end) {
         else if(end === "WORK"){
             return "Work"
         }
+        else if(end === "EXAM"){
+            return "Exam"
+        }
         return "All Day"
     }else {
         return get_12_hour_int(start) + " - "
@@ -547,6 +553,10 @@ function find_duration(start, end) {
     }
 }
 
+let exam_all_day = ""
+let exam_time = ""
+let exam_before = ""
+let exam_15 = ""
 function set_current_event(key, time_24) {
     // const base_color = "#0f99e3"
     const base_color = "#bd0000"
@@ -555,10 +565,7 @@ function set_current_event(key, time_24) {
     const upcoming_color = "#4bd6d6"
     const grey = "#383838"
 	const finished = "#232323"
-	
-	const work_color = "#ffee00"
-    // const todo_color = "#ffa857"
-
+    const work_color = "#ffee00"
 
     const time = parseInt(time_24)
     const dict = dictionary()
@@ -578,6 +585,7 @@ function set_current_event(key, time_24) {
 
             start = cur["start"]
             end = cur["end"]
+            let color = base_color
             
             if (cur["all_day"]) {
                 if(cur["todo"] === "TODO"){
@@ -586,19 +594,66 @@ function set_current_event(key, time_24) {
                 else if(cur["todo"] === "WORK"){
                     change_class_color(names, i, work_color, list.length)
                 }
+                else if(cur["todo"] === "EXAM"){
+                    if(d.getSeconds() % 2 == 0){
+                        exam_all_day = base_color
+                    }
+                    else{
+                        exam_all_day = todo_color
+                    }
+                    change_class_color(names, i, exam_all_day, list.length)
+                }
                 else{
                     change_class_color(names, i, all_day_color, list.length)
                 }
-            } else if (time >= start && time <= end) {
-				let color = base_color
-				if(cur["todo"] == "WORK"){color = work_color}
+            } else if (time >= start && time <= end) {                
+                if(cur["todo"] == "WORK"){color = work_color}
+                else if(cur["todo"] == "TODO"){color = todo_color}
+                else if(cur["todo"] == "EXAM"){
+                    if(d.getSeconds() % 2 == 0){
+                        exam_time = base_color
+                    }
+                    else{
+                        exam_time = todo_color
+                    }
+                    color = exam_time
+                }
+                else{
+                    color = base_color
+                }
+                
                 change_class_color(names, i, color, list.length)
             } else if (minus_fifteen(start) <= time && time < start) {
-                change_class_color(names, i, upcoming_color, list.length)
+                if(cur["todo"] == "EXAM"){
+                    if(d.getSeconds() % 2 == 0){
+                        exam_15 = todo_color
+                    }
+                    else{
+                        exam_15 = upcoming_color
+                    }
+                    color = exam_15
+                }
+                else{
+                    color = upcoming_color
+                }
+
+                change_class_color(names, i, color, list.length)
             } else if (time > end) {
                 change_class_color(names, i, finished, list.length)
             } else {
-                change_class_color(names, i, grey, list.length)
+                if(time+100 >= cur["start"] && cur["todo"] == "EXAM"){
+                    if(d.getSeconds() % 2 == 0){
+                        exam_before = work_color
+                    }
+                    else{
+                        exam_before = grey
+                    }
+                    color = exam_before
+                }
+                else{
+                    color = grey
+                }
+                change_class_color(names, i, color, list.length)
             }
         }
     } else {
@@ -614,6 +669,9 @@ function set_current_event(key, time_24) {
                 }
                 else if(cur["todo"] === "WORK"){
                     change_class_color(names, i, work_color, list.length)
+                }
+                else if(cur["todo"] === "EXAM"){
+                    change_class_color(names, i, base_color, list.length)
                 }
                 else{
                     change_class_color(names, i, all_day_color, list.length)
@@ -665,7 +723,7 @@ function minus_fifteen(input) {
         let toReturn = 0
 
         const sub = 15
-        let string = input.toString()
+        let string = add_zero(input)
         let hour_string = string[0] + string[1]
 		let min_string = string[2] + string[3]
         let hour = parseInt(hour_string)
@@ -768,6 +826,7 @@ function forward_month(){
         set_month = null
         set_day = null
         document.getElementsByClassName("weather")[0].style.visibility = "visible"
+        document.getElementById("backward").style.filter = "initial"
     }
     else if(cal_pos <= up){
         next_month = date.getMonth()+cal_pos
@@ -781,6 +840,10 @@ function forward_month(){
         set_month = next_month
         set_day = next_day
         document.getElementsByClassName("weather")[0].style.visibility = "hidden"
+        document.getElementById("backward").style.filter = "initial"
+        if(cal_pos == up){
+            document.getElementById("forward").style.filter = "grayscale(100%) brightness(50%)"
+        }
     }
     else{
         cal_pos -= 1
@@ -803,6 +866,7 @@ function backward_month(){
         set_month = null
         set_day = null
         document.getElementsByClassName("weather")[0].style.visibility = "visible"
+        document.getElementById("forward").style.filter = "initial"
     }
     else if(cal_pos >= down){
         prev_month = date.getMonth()+cal_pos
@@ -817,6 +881,10 @@ function backward_month(){
         set_month = prev_month
         set_day = prev_day
         document.getElementsByClassName("weather")[0].style.visibility = "hidden"
+        document.getElementById("forward").style.filter = "initial"
+        if(cal_pos == down){
+            document.getElementById("backward").style.filter = "grayscale(100%) brightness(50%)"
+        }
     }
     else{
         cal_pos += 1
@@ -827,8 +895,7 @@ function backward_month(){
 }
 
 function backButton(){
-    url = "../tab/custom_tab.html"
-    window.location.replace(url)
+    history.go(-1)
 }
 
 function leap_year(y){
@@ -882,305 +949,7 @@ function back_clicked() {
     if(desc_clicked){
         desc_clicked = false
     }
-    else{
+    else if(document.getElementById("description_container") != null){
         document.getElementById("description_container").style.visibility = "hidden"
     }
-}
-
-function dictionary() {
-	return {
-		"12/01/2020": [{"summary": "Pay Rent", "all_day": true, "todo": null, "start": null, "end": null, "location": "<a href=\"https://mycommunity.americancampus.com/s/\" id=\"link\" onclick=\"link()\">Americancampus</a>", "description": null},
-						{"summary": "Change board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null},
-						{"summary": "CSE 341", "all_day": false, "todo": null, "start": 1245, "end": 1400, "location": "<a href=\"https://buffalo.zoom.us/j/8494375567?pwd=Z2dkSGZZTlBoUWRKekozYnlKSFR0UT09\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null},
-						{"summary": "Shot", "all_day": false, "todo": null, "start": 1800, "end": 1900, "location": null, "description": null},
-						{"summary": "Phy 108", "all_day": false, "todo": null, "start": 2040, "end": 2155, "location": "<a href=\"https://buffalo.zoom.us/meeting/register/tJIuceiprDwtGNEegXXyshOJMKbPDW1BMant\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null}],
-		"12/02/2020": [{"summary": "Unplug Board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null},
-						{"summary": "CS Recitation", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "MTH 309", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": "<a href=\"https://buffalo.zoom.us/j/98856692754?pwd=4o892q\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": "4o892q    "},
-						{"summary": "Math Recitation", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": "<a href=\"https://buffalo.zoom.us/j/97202514665?pwd=818165\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null},
-						{"summary": "Fusion 360 Workshop", "all_day": false, "todo": null, "start": 1700, "end": 1900, "location": "<a href=\"https://buffalo.zoom.us/j/95139165391\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null}],
-		"12/03/2020": [{"summary": "CSE 341", "all_day": false, "todo": null, "start": 1245, "end": 1400, "location": "<a href=\"https://buffalo.zoom.us/j/8494375567?pwd=Z2dkSGZZTlBoUWRKekozYnlKSFR0UT09\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null},
-						{"summary": "Phy 108", "all_day": false, "todo": null, "start": 2040, "end": 2155, "location": "<a href=\"https://buffalo.zoom.us/meeting/register/tJIuceiprDwtGNEegXXyshOJMKbPDW1BMant\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null}],
-		"12/04/2020": [{"summary": "Physics Lab", "all_day": false, "todo": null, "start": 0910, "end": 1200, "location": "<a href=\"https://ub.webex.com/meet/muyehe\" id=\"link\" onclick=\"link()\">Webex</a>", "description": null},
-						{"summary": "MTH 309", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": "<a href=\"https://buffalo.zoom.us/j/98856692754?pwd=4o892q\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": "4o892q    "}],
-		"12/05/2020": [],
-		"12/06/2020": [],
-		"12/07/2020": [{"summary": "Linear Algebra Review", "all_day": false, "todo": null, "start": 1030, "end": 1130, "location": "<a href=\"https://www.youtube.com/watch?v=AnMaXo6mux0&ab_channel=Ludus\" id=\"link\" onclick=\"link()\">Youtube</a>", "description": null},
-						{"summary": "Physics Recitation", "all_day": false, "todo": null, "start": 1130, "end": 1220, "location": "<a href=\" https://buffalo.zoom.us/j/6179834541?pwd=aEZXOW4xMUhjQUM4b05YelNwZ09ldz09\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null},
-						{"summary": "MTH 309", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": "<a href=\"https://buffalo.zoom.us/j/98856692754?pwd=4o892q\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": "4o892q    "}],
-		"12/08/2020": [{"summary": "CSE 341", "all_day": false, "todo": null, "start": 1245, "end": 1400, "location": "<a href=\"https://buffalo.zoom.us/j/8494375567?pwd=Z2dkSGZZTlBoUWRKekozYnlKSFR0UT09\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null},
-						{"summary": "Linear Algebra Review", "all_day": false, "todo": null, "start": 1530, "end": 1700, "location": "<a href=\"https://www.youtube.com/watch?v=FmN2c0yQ6Bk&ab_channel=Ludus\" id=\"link\" onclick=\"link()\">Youtube</a>", "description": null},
-						{"summary": "Phy 108", "all_day": false, "todo": null, "start": 2040, "end": 2155, "location": "<a href=\"https://buffalo.zoom.us/meeting/register/tJIuceiprDwtGNEegXXyshOJMKbPDW1BMant\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null}],
-		"12/09/2020": [{"summary": "CS Recitation", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "MTH 309", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": "<a href=\"https://buffalo.zoom.us/j/98856692754?pwd=4o892q\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": "4o892q    "},
-						{"summary": "Math Recitation", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": "<a href=\"https://buffalo.zoom.us/j/97202514665?pwd=818165\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null}],
-		"12/10/2020": [{"summary": "CSE 341", "all_day": false, "todo": null, "start": 1245, "end": 1400, "location": "<a href=\"https://buffalo.zoom.us/j/8494375567?pwd=Z2dkSGZZTlBoUWRKekozYnlKSFR0UT09\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null},
-						{"summary": "Phy 108", "all_day": false, "todo": null, "start": 2040, "end": 2155, "location": "<a href=\"https://buffalo.zoom.us/meeting/register/tJIuceiprDwtGNEegXXyshOJMKbPDW1BMant\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null}],
-		"12/11/2020": [{"summary": "Physics Lab", "all_day": false, "todo": null, "start": 0910, "end": 1200, "location": "<a href=\"https://ub.webex.com/meet/muyehe\" id=\"link\" onclick=\"link()\">Webex</a>", "description": null},
-						{"summary": "MTH 309", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": "<a href=\"https://buffalo.zoom.us/j/98856692754?pwd=4o892q\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": "4o892q    "}],
-		"12/12/2020": [],
-		"12/13/2020": [],
-		"12/14/2020": [{"summary": "CS FINAL", "all_day": false, "todo": null, "start": 1300, "end": 1730, "location": null, "description": null}],
-		"12/15/2020": [{"summary": "Electricity", "all_day": true, "todo": null, "start": null, "end": null, "location": "<a href=\"https://www.nationalgridus.com/Upstate-NY-Home/Billing-Payments/Ways-to-Pay\" id=\"link\" onclick=\"link()\">Nationalgridus</a>", "description": null}],
-		"12/16/2020": [{"summary": "Physics FINAL", "all_day": false, "todo": null, "start": 0800, "end": 1130, "location": "<a href=\"https://buffalo.zoom.us/j/2637418004?pwd=M1FSMFpMWWtIUEtsanh0S3hyMll1Zz09\" id=\"link\" onclick=\"link()\">Zoom</a>", "description": null},
-						{"summary": "Math FINAL", "all_day": false, "todo": null, "start": 1145, "end": 1545, "location": "<a href=\"https://exams.math.buffalo.edu/zoom/?pin=mwqv\" id=\"link\" onclick=\"link()\">Math</a>", "description": "<p>https://buffalo.zoom.us/j/92364356158?pwd=Z0xublgyeWFwc1R5b2EvaXR3dHUrdz09</p>"}],
-		"12/17/2020": [{"summary": "Phyiscs Lab FINAL", "all_day": false, "todo": null, "start": 1145, "end": 1315, "location": null, "description": null}],
-		"12/18/2020": [],
-		"12/19/2020": [],
-		"12/20/2020": [],
-		"12/21/2020": [],
-		"12/22/2020": [],
-		"12/23/2020": [],
-		"12/24/2020": [],
-		"12/25/2020": [],
-		"12/26/2020": [],
-		"12/27/2020": [],
-		"12/28/2020": [],
-		"12/29/2020": [],
-		"12/30/2020": [],
-		"12/31/2020": [],
-		"01/01/2021": [{"summary": "Pay Rent", "all_day": true, "todo": null, "start": null, "end": null, "location": "<a href=\"https://mycommunity.americancampus.com/s/\" id=\"link\" onclick=\"link()\">Americancampus</a>", "description": null},
-						{"summary": "Change board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null}],
-		"01/02/2021": [{"summary": "Unplug Board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null}],
-		"01/03/2021": [],
-		"01/04/2021": [],
-		"01/05/2021": [{"summary": "Example", "all_day": false, "todo": null, "start": 2000, "end": 2100, "location": null, "description": "This is a test to see if links work here<br><br><a href='http://www.google.com'>GOOGLE</a><br><br>what about this?<br><br><a href='https://piazza.com/class/keacvhkkr9447s'>Piazza</a><br><br><b>BOLD text</b>?<br><br><i>Italic?</i><br><i><br></i><br>Attachment\;" + 
- 							"<div class='attachment'><a class='no_underline' href='https://drive.google.com/file/d/1LIKQhW5skikIOs_yYFTAfrHL36K0Ck3C/view?usp=drive_web'><div class='attach_image'><img src='../images/png.png' style='height: 12px; width: 12px;'></div><div class='attach_name'>black_blue.png</div></div>"}],
-		"01/06/2021": [],
-		"01/07/2021": [],
-		"01/08/2021": [],
-		"01/09/2021": [],
-		"01/10/2021": [],
-		"01/11/2021": [],
-		"01/12/2021": [],
-		"01/13/2021": [{"summary": "Dentist", "all_day": true, "todo": null, "start": null, "end": null, "location": null, "description": null}],
-		"01/14/2021": [{"summary": "Hair Cut", "all_day": false, "todo": null, "start": 1400, "end": 1500, "location": null, "description": null}],
-		"01/15/2021": [{"summary": "Electricity", "all_day": true, "todo": null, "start": null, "end": null, "location": "<a href=\"https://www.nationalgridus.com/Upstate-NY-Home/Billing-Payments/Ways-to-Pay\" id=\"link\" onclick=\"link()\">Nationalgridus</a>", "description": null},
-						{"summary": "Remove Bank Account from Auto Pay", "all_day": true, "todo": null, "start": null, "end": null, "location": "<a href=\"https://mycommunity.americancampus.com/s/\" id=\"link\" onclick=\"link()\">Americancampus</a>", "description": "Will probably have to contact bank or American Campus"}],
-		"01/16/2021": [],
-		"01/17/2021": [],
-		"01/18/2021": [],
-		"01/19/2021": [],
-		"01/20/2021": [],
-		"01/21/2021": [],
-		"01/22/2021": [],
-		"01/23/2021": [],
-		"01/24/2021": [],
-		"01/25/2021": [{"summary": "Network Defense", "all_day": false, "todo": null, "start": 1900, "end": 2100, "location": "<a href=\"https://www.reddit.com/r/UBreddit/comments/l0am1r/ub_network_defense_info_session_125_at_700_pm/?utm_medium=android_app&utm_source=share\" id=\"link\" onclick=\"link()\">Reddit</a>", "description": null}],
-		"01/26/2021": [],
-		"01/27/2021": [],
-		"01/28/2021": [],
-		"01/29/2021": [],
-		"01/30/2021": [],
-		"01/31/2021": [],
-		"02/01/2021": [{"summary": "Change board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null},
-						{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/02/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "Unplug Board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/03/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/04/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/05/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/06/2021": [],
-		"02/07/2021": [],
-		"02/08/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/09/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/10/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/11/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/12/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/13/2021": [],
-		"02/14/2021": [],
-		"02/15/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/16/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/17/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/18/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/19/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/20/2021": [],
-		"02/21/2021": [],
-		"02/22/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/23/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/24/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/25/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"02/26/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"02/27/2021": [],
-		"02/28/2021": [],
-		"03/01/2021": [{"summary": "Change board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null},
-						{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/02/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "Unplug Board", "all_day": false, "todo": null, "start": 0900, "end": 0905, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/03/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/04/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/05/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/06/2021": [],
-		"03/07/2021": [],
-		"03/08/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/09/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/10/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/11/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/12/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/13/2021": [],
-		"03/14/2021": [],
-		"03/15/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/16/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/17/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/18/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/19/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/20/2021": [],
-		"03/21/2021": [],
-		"03/22/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/23/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/24/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/25/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/26/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/27/2021": [],
-		"03/28/2021": [],
-		"03/29/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"03/30/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"03/31/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/01/2021": [{"summary": "Registration Flow Sheet", "all_day": true, "todo": null, "start": null, "end": null, "location": "<a href=\"https://academics.eng.buffalo.edu/academics/flowsheet/\" id=\"link\" onclick=\"link()\">Eng</a>", "description": "-" + 
- 							"<div class='attachment'><a class='no_underline' href='https://drive.google.com/file/d/1je8RmCRTZHM6AnhR7BKDU8BJcrJAChnY/view?usp=drive_web'><div class='attach_image'><img src='../images/png.png' style='height: 12px; width: 12px;'></div><div class='attach_name'>flow.png</div></div>"},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/02/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/03/2021": [],
-		"04/04/2021": [],
-		"04/05/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/06/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/07/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/08/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/09/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/10/2021": [],
-		"04/11/2021": [],
-		"04/12/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/13/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/14/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/15/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/16/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/17/2021": [],
-		"04/18/2021": [],
-		"04/19/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/20/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/21/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/22/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/23/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/24/2021": [],
-		"04/25/2021": [],
-		"04/26/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241", "all_day": false, "todo": null, "start": 1020, "end": 1110, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/27/2021": [{"summary": "EAS 305 Recitation", "all_day": false, "todo": null, "start": 0800, "end": 0850, "location": null, "description": null},
-						{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/28/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 379 Lab", "all_day": false, "todo": null, "start": 1130, "end": 1250, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}],
-		"04/29/2021": [{"summary": "EAS 360", "all_day": false, "todo": null, "start": 0935, "end": 1050, "location": null, "description": null}],
-		"04/30/2021": [{"summary": "CSE 379", "all_day": false, "todo": null, "start": 0910, "end": 1000, "location": null, "description": null},
-						{"summary": "CSE 241 Lab", "all_day": false, "todo": null, "start": 1240, "end": 1330, "location": null, "description": null},
-						{"summary": "EAS 305", "all_day": false, "todo": null, "start": 1350, "end": 1440, "location": null, "description": null}]
-	}
-}
-function weather() {
-	return {
-		"01/25/2021": {"high": 35, "low": null, "forecast": "Clouds", "icon": "04d"},
-		"01/26/2021": {"high": 28, "low": 27, "forecast": "Snow", "icon": "13d"},
-		"01/27/2021": {"high": 28, "low": 24, "forecast": "Snow", "icon": "13d"},
-		"01/28/2021": {"high": 24, "low": 14, "forecast": "Clouds", "icon": "04d"},
-		"01/29/2021": {"high": 15, "low": 10, "forecast": "Snow", "icon": "13d"},
-		"01/30/2021": {"high": 19, "low": 12, "forecast": "Snow", "icon": "13d"}
-	}
 }

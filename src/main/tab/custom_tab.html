@@ -4,19 +4,21 @@
     <title>New Tab</title>
     <link rel="shortcut icon" type="image/png" href="../images/favicon.png">
 </head>
-<body style="background: #0e0e0e" onload="run(); wind(); cal_icon(); start_color(); ">
+<body style="background: #0e0e0e" ">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<script type="text/javascript" src="../js/code.js"></script>
+<script type="text/javascript" src="../js/code.js"></script>    
 <script type="text/javascript" src="../js/agenda.js"></script>
+<script type="text/javascript" src="../js/init_agenda.js"></script>
+<script type="text/javascript" src="../js/events.js"></script>
 <canvas id="c"></canvas>
 
 <div class="wrap">
     <div class="search">
-        <input type="text" class="searchTerm" placeholder="Search Google" onkeypress="clickyClick()" autocomplete="off"
+        <input type="text" class="searchTerm" placeholder="Search Google" autocomplete="off"
                id="comment">
-        <button type="submit" class="searchButton" onclick="search()">
+        <button type="submit" class="searchButton">
             <i class="fa fa-search"></i>
         </button>
     </div>
@@ -104,7 +106,7 @@
 
 <div id="icons">
     <div id="user">
-        <input type="image" alt="apps" onclick="userToggle()" height="36" width="36" id="pic" src="../images/profile.png"/>
+        <input type="image" alt="apps" height="36" width="36" id="pic" src="../images/profile.png"/>
 
         <div id="logins" style="visibility:hidden">
             <div id="space1">
@@ -112,10 +114,10 @@
             </div>
             <div>
                 <div id="user1">
-                    <img id="img_user1"src="../images/ub.png" width="36" height="36" onclick="first_tab()"/>
+                    <img id="img_user1"src="../images/ub.png" width="36" height="36"/>
                 </div>
                 <div id="user2">
-                    <img src="../images/anon.png" width="36" height="36" onclick="second_tab()"/>
+                    <img id="img_user2" src="../images/anon.png" width="36" height="36" />
                 </div>
             </div>
             <style>
@@ -174,46 +176,45 @@
             display: block;
             position: relative;
             width: 35px;
-            top: -48px;
+            top: -44px;
             margin-left: -32px;
         }
 
     </style>
 
     <div id="appDrawer">
-        <input type="image" src="../images/app_drawer.png" id="apps" onclick="appToggle()" height="33" width="33">
+        <input type="image" src="../images/app_drawer.png" id="apps" height="33" width="33">
 
         <div id="Mydiv" style="display:none">
 
             <div id="app_1">
                 <div id="custom_cal">
-                    <a href="../calendar/calendar.html" type="checkbox" onclick="app_clicked_on()"/>
                     <img class="calendarimg" src="https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png"
                          width="38" height="38"/>
                 </div>
                 <div id="cal">
-                    <a href="https://calendar.google.com/calendar/" type="checkbox" onclick="app_clicked_on()"/>
+                    <a href="https://calendar.google.com/calendar/" type="checkbox" class="app"/>
                     <img class="calendarimg" src="https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png"
                          width="38" height="38"/>
                 </div>
             </div>
             <div id="app_2">
                 <div id="youtube">
-                    <a href="https://www.youtube.com/" type="checkbox" onclick="app_clicked_on()"/>
+                    <a href="https://www.youtube.com/" type="checkbox" class="app"/>
                     <img alt="youtube" src="../images/youtube.png" width="33" height="33"/>
                 </div>
                 <div id="TV">
-                    <a href="https://tv.youtube.com/" type="checkbox" onclick="app_clicked_on()"/>
+                    <a href="https://tv.youtube.com/" type="checkbox" class="app"/>
                     <img alt="TV" src="../images/youtube_tv.png" width="36" height="36"/>
                 </div>
             </div>
             <div id="app_3">
                 <div id="drive">
-                    <a href="https://drive.google.com/drive/u/0/my-drive" type="checkbox" onclick="app_clicked_on()"/>
+                    <a href="https://drive.google.com/drive/u/0/my-drive" type="checkbox" class="app"/>
                     <img src="../images/drive.png" width="33" height="33"/>
                 </div>
                 <div id="password">
-                    <a href="https://passwords.google.com/" type="checkbox" onclick="app_clicked_on()"/>
+                    <a href="https://passwords.google.com/" type="checkbox" class="app"/>
                     <img src="../images/password.png" width="36" height="36"/>
                 </div>
                 <div id="space">
@@ -229,7 +230,7 @@
                 position: relative;
                 width: 33px;
                 height: 33px;
-                top: -94.75px;
+                top: -86px;
                 margin-left: 47px;
                 -webkit-user-drag: none;
 
@@ -281,6 +282,7 @@
                 margin-left: -20px;
                 -webkit-user-drag: none;
                 filter: saturate(8);
+                cursor: pointer;
             }
             #drive{
                 -webkit-user-drag: none;
@@ -320,7 +322,7 @@
 
 <div id="l">
     <div id="date">
-        <div id="calendar" onclick="toggleCal(); tomorrow_toggle()">
+        <div id="calendar" >
             <div id="cal_name"></div>
             <div id="cal_location"></div>
             <div id="start_end"></div>
@@ -333,7 +335,7 @@
         </div>
     </div>
 </div>
-<div id="all_day" onclick="rotate_click()">
+<div id="all_day">
     <div id="summary">
         place_holder
     </div>
@@ -368,7 +370,7 @@
         user-select: none;
         margin-top: -60px;
         position: absolute;
-        width: 350px;
+        width: 360px;
         height: 0px;
     }
 
@@ -380,7 +382,7 @@
         user-select: none;
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: 340px;
+        width: 360px;
         display: block;
         overflow: hidden
     }
@@ -393,7 +395,7 @@
         color: #303030;
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: 340px;
+        width: 360px;
         display: block;
         overflow: hidden
     }
@@ -404,12 +406,12 @@
         color: #303030;
         font-family: Orbitron;
         user-select: none;
-        width: 350px;
+        width: 360px;
     }
 
     #calendar {
         margin-top: 100px;
-        width: 350px;
+        width: 360px;
         height: 80px;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
@@ -477,11 +479,11 @@
     }
 </style>
 
-<div id="description_container" onclick="description_clicked_on()">
+<div id="description_container">
     <div id="desc_con">
         <div id="description"></div>
     </div>
-    <div class="red_dot" onclick="document.getElementById('description_container').style.visibility = 'hidden'"></div>
+    <div id="red_dot" class="red_dot"></div>
     <style>
         .dot {
             height: 15px;
@@ -510,7 +512,7 @@
         }
         #desc_con{
             background-color: #151515;
-            width: 310px;
+            width: 320px;
             height: 520px;
             margin-left: 20px;
             margin-top: 20px;
@@ -519,7 +521,7 @@
             position: absolute;
         }
         #description{
-            width: 310px;
+            width: 300px;
             font-size: 18px;
             font-family:'Courier New', Courier, monospace;
             color:#a1a1a1;
@@ -531,8 +533,8 @@
             width: 15px;
             background-color: #be0000;
             border-radius: 50%;
-            margin-right: 5px;
-            margin-top: 5px;
+            margin-right: 4px;
+            margin-top: 4px;
             display: inline-block;
             right: 0;
             cursor: pointer;
@@ -549,10 +551,10 @@
         #desc_con::-webkit-scrollbar-track {
             background: #0e0e0e;
             border-radius: 20px;
-        }
+        } 
         a{
             color: #0f99e3;
-        }
+        }   
         .attachment{
             height: 25px;
             width: 310px;

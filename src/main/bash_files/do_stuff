@@ -1,21 +1,19 @@
 time=$(date +%k%M)
 minutes=$(date +%M)
 
-echo "$(tput setaf 5)$time"
-echo "$(tput setaf 9)temp-$(vcgencmd measure_temp)"
-echo "$(tput setaf 10)"
-
-bash /home/pi/bash_files/parse
+echo " "
+echo $time
+echo $(vcgencmd measure_temp)"
+echo " "
 
 if [ $time == 2200 ]; then
       vcgencmd display_power 0
       sleep 9h #turn on at 7
 	export DISPLAY=:0
-	xdotool key f5
+	xdotool key F5
       vcgencmd display_power 1
-      bash /home/pi/bash_files/parse
 
 fi
 
+bash /home/pi/bash_files/parse
 bash /home/pi/bash_files/helper
-

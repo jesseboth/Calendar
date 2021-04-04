@@ -665,6 +665,9 @@ object parse_help {
 
       /*loop through days events*/
       for (event <- hash(i)) {
+          if(!event.all_day && event.end == null){
+              event.end = event.start
+          }
         outputFile.write("{")
 
         outputFile.write("\"summary\": " + add_quotes(event.summary) + ", ")
@@ -764,7 +767,7 @@ object parse_help {
         if(!hyperlink.contains("https")){
             link = "https://" + hyperlink
         }
-        var html = "\"<a href=\\\"" + link + "\\\" id=\\\"link\\\" onclick=\\\"link()\\\">"
+        var html = "\"<a href=\\\"" + link + "\\\" id=\\\"link\\\">"
 
         /*skip https:\\*/
         var i = 8

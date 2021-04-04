@@ -12,3 +12,20 @@ INFO: Unsupported notification method: $/setTraceNotification
 2020.11.06 09:47:53 INFO  started: Metals version 0.9.4 in workspace 'C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar' for client vscode.
 2020.11.06 09:47:53 INFO  time: initialize in 0.44s
 2020.11.06 09:48:56 INFO  shutting down Metals
+[0m2021.01.25 16:03:24 INFO  Started: Metals version 0.9.10 in workspace 'C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar' for client vscode 1.52.1.[0m
+[0m2021.01.25 16:03:25 INFO  time: initialize in 0.79s[0m
+[0m2021.01.25 16:03:26 WARN  resetting database: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\.metals\metals.h2.db[0m
+[0m2021.01.25 16:03:26 WARN  Build server is not auto-connectable.[0m
+[0m2021.01.25 16:03:43 INFO  no build target: using presentation compiler with only scala-library[0m
+[0m2021.01.25 16:03:46 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\parse_cal.scala[0m
+[0m2021.01.25 16:03:50 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\parse_data_info.scala[0m
+[0m2021.01.25 16:03:54 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\parse_elements.scala[0m
+[0m2021.01.25 16:04:00 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\parse_help.scala[0m
+[0m2021.01.25 16:04:05 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\parse_weather.scala[0m
+[0m2021.01.25 16:04:18 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\run.scala[0m
+[0m2021.01.25 16:05:22 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\run.scala[0m
+[0m2021.01.25 16:05:34 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\run.scala[0m
+Jan 25, 2021 4:09:02 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTraceNotification
+[0m2021.01.25 16:09:29 WARN  no build target for: C:\Users\jesse\IdeaProjects\Personal-Projects\Calendar\src\main\scala\run.scala[0m
+[0m2021.01.25 16:10:14 INFO  shutting down Metals[0m

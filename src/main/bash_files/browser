@@ -1,7 +1,6 @@
 export DISPLAY=:0
-chromium-browser --start-fullscreen --incognito --disable-infobars /home/pi/New_Tab/src/main/pi_ca$
+chromium-browser --start-fullscreen --kiosk --disable-component-update --disable-infobars /home/pi/New_Tab/src/main/calendar/pi_calendar.html
 #sudo touch /etc/chromium-browser/customizations/01-disable-update-check;echo CHROMIUM_FLAGS=\"\$\{CHROMIUM_FLAGS\} --check-for-update-interval=31536000\" | sudo tee /etc/chromium-browser/customizations/01-disable-update-check
-#xdg-open /home/pi/New_Tab/src/main/pi_calendar.html
 #sudo apt-get install xdotool
 xdotool key F11
 

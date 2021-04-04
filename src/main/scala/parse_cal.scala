@@ -155,21 +155,32 @@ object parse_cal {
                         todo = true
                         todo_word = des
                         towrite.todo = todo_word
-                        if(description_split.length > 2){
-                            text += description_split(2)
-                            line = lines.next()
+                        /*contains ':'*/
+                        if(description_split.length > 3){
+                            for(k <- 2 until description_split.length){
+                                if(k < description_split.length-1){
+                                    text += description_split(k)+":"
+                                }
+                                else{
+                                    text += description_split(k) 
+                                }
+                            }
                         }
+                        else if(description_split.length > 2){
+                            text += description_split(2)
+                        }
+                        line = lines.next()
                     }
                     else{
                         todo = false
                         if(description_split.length > 1){
                             for(k <- 1 until description_split.length){
-                            if(k < description_split.length-1){
-                                text += description_split(k) +":"
-                            }
-                            else{
-                                text += description_split(k) 
-                            }
+                                if(k < description_split.length-1){
+                                    text += description_split(k) +":"
+                                }
+                                else{
+                                    text += description_split(k) 
+                                }
                             }
                         }
                         else{
@@ -185,8 +196,10 @@ object parse_cal {
                         text += line
                         line = lines.next()
                     }
-                    towrite.description = text.replaceAll("\"", "'")
-                    text = ""
+                    if(text != ""){
+                        towrite.description = text.replaceAll("\"", "'")
+                        text = ""
+                    }
                 }
                 else{
                     line = lines.next()

@@ -32,9 +32,10 @@ object parse_weather {
     var max_temp = 10
     var condition = 3
     var icon = 5
+    val night_icons = List("\"01n\"", "\"02n\"", "\"10n\"")
+    var icon_image = ""
     val d = new Date()
     val date = addZero(d.getMonth+1) + "/" + addZero(d.getDate) + "/" + new SimpleDateFormat("yyyy").format(d.getTime)
-
     val list = toString(in)
     var split = list.split(",")
 
@@ -49,8 +50,14 @@ object parse_weather {
         icon = i
       }
     }
-
-    var weather = List(toFarenheit(toValue(split(temp))), toValue(split(condition)), toValue(split(icon)).replace('n', 'd'), date)
+    val ico = toValue(split(icon))
+    if(ico.contains('n') && !night_icons.contains(ico)){
+      icon_image = ico.replace('n', 'd')
+    }
+    else{
+      icon_image = ico
+    }
+    var weather = List(toFarenheit(toValue(split(temp))), toValue(split(condition)), icon_image, date)
     weather_5 += weather
 
 
