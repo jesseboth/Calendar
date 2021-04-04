@@ -5,7 +5,7 @@ object run {
     val myCal = ""
     
     /*open weather api key*/
-    val OpenWeatherApiKey = "8533b8668f13ad68d228a597e4e788d8"
+    val OpenWeatherApiKey = ""
     
     /*city ID*/
     val OpenWeatherCityID = "5110629"
