@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Tab</title>
+    <link rel="shortcut icon" type="image/png" href="../images/favicon.png">
+</head>
+<body style="background: #0e0e0e" ">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src="../js/code.js"></script>    
+<script type="text/javascript" src="../js/agenda.js"></script>
+<script type="text/javascript" src="../js/init_agenda.js"></script>
+<script type="text/javascript" src="../js/events.js"></script>
+<canvas id="c"></canvas>
+
+<div class="wrap">
+    <div class="search">
+        <input type="text" class="searchTerm" placeholder="Search Google" autocomplete="off"
+               id="comment">
+        <button type="submit" class="searchButton">
+            <i class="fa fa-search"></i>
+        </button>
+    </div>
+    <div id=google >
+        <img id='img_google' src="../images/google.png" style="height: 100px; width:300px">
+    </div>
+</div>
+
+
+<style>
+    #c{
+        position: fixed;
+        /* background-color: #0e0e0e; */
+        /* visibility: hidden; */
+    }
+
+    ::placeholder {
+        color: #383838;
+        font-family: Orbitron-light;
+    }
+
+    .search {
+        width: 425px;
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        outline: none;
+    }
+
+    .searchTerm {
+        width: 500px;
+        border: 2px solid #0f99e3;
+        padding: 5px;
+        height: 22.5px;
+        border-radius: 15px 0 0 15px;
+        background: rgb(0,0,0,0);
+        outline: none;
+        font-family: Orbitron-light;
+        color: #383838;
+    }
+
+    .searchTerm:focus {
+        color: #0f99e3;
+    }
+
+    .searchButton {
+        width: 38px;
+        height: 36.6px;
+        border: .5px solid #0f99e3;
+        background: #0f99e3;
+        text-align: center;
+        color: #0e0e0e;
+        border-radius: 0 15px 15px 0;
+        cursor: pointer;
+        font-size: 20px;
+        outline: none;
+
+
+    }
+
+    .wrap {
+        width: 500px;
+        margin: auto;
+        margin-top: 340px;
+
+    }
+
+    #google img {
+        display: block;
+        width: 300px;
+        height: 100px;
+        /* position: relative; */
+        margin-top: 10px;
+        user-select: none;
+        -webkit-user-drag: none;
+        margin-left: auto;
+        margin-right: auto;
+        top: -180px;
+    }
+    #img_google{
+        position: relative;
+    }
+</style>
+
+<div id="icons">
+    <div id="user">
+        <input type="image" alt="apps" height="36" width="36" id="pic" src="../images/profile.png"/>
+
+        <div id="logins" style="visibility:hidden">
+            <div id="space1">
+                <img src="../images/space.png"/>
+            </div>
+            <div>
+                <div id="user1">
+                    <img id="img_user1"src="../images/ub.png" width="36" height="36"/>
+                </div>
+                <div id="user2">
+                    <img id="img_user2" src="../images/anon.png" width="36" height="36" />
+                </div>
+            </div>
+            <style>
+                #user {
+                    display: block;
+                    position: relative;
+                    width: 36px;
+                    height: 36px;
+                    margin-left: 120px;
+                    -webkit-user-drag: none;
+                    border-radius: 50px 50px;
+
+                }
+
+                #user1 img {
+                    display: block;
+                    position: relative;
+                    top: 0px;
+                    -webkit-user-drag: none;
+                    border-radius: 50px 50px;
+                    left: -1px;
+                    cursor: pointer;
+                }
+
+                #user2 img {
+                    display: block;
+                    position: relative;
+                    top: 11px;
+                    -webkit-user-drag: none;
+                    border-radius: 50px 50px;
+                    cursor: pointer;
+                }
+
+                #pic {
+                    outline: none;
+                    -webkit-user-drag: none;
+                    cursor: pointer;
+                }
+
+            </style>
+        </div>
+
+
+    </div>
+    <div id=gmail>
+        <p>
+            <a id="email_link" href="https://mail.google.com/mail/u/0/#inbox">
+                <img id="email" alt="gmail" src="../images/gmail.png" height="23" width="35">
+            </a>
+        </p>
+    </div>
+
+    <style type="text/css">
+
+        #gmail {
+            display: block;
+            position: relative;
+            width: 35px;
+            top: -44px;
+            margin-left: -32px;
+        }
+
+    </style>
+
+    <div id="appDrawer">
+        <input type="image" src="../images/app_drawer.png" id="apps" height="33" width="33">
+
+        <div id="Mydiv" style="display:none">
+
+            <div id="app_1">
+                <div id="custom_cal">
+                    <img class="calendarimg" src="https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png"
+                         width="38" height="38"/>
+                </div>
+                <div id="cal">
+                    <a href="https://calendar.google.com/calendar/" type="checkbox" class="app"/>
+                    <img class="calendarimg" src="https://ssl.gstatic.com/calendar/images/dynamiclogo/2x/cal_31_v1.png"
+                         width="38" height="38"/>
+                </div>
+            </div>
+            <div id="app_2">
+                <div id="youtube">
+                    <a href="https://www.youtube.com/" type="checkbox" class="app"/>
+                    <img alt="youtube" src="../images/youtube.png" width="33" height="33"/>
+                </div>
+                <div id="TV">
+                    <a href="https://tv.youtube.com/" type="checkbox" class="app"/>
+                    <img alt="TV" src="../images/youtube_tv.png" width="36" height="36"/>
+                </div>
+            </div>
+            <div id="app_3">
+                <div id="drive">
+                    <a href="https://drive.google.com/drive/u/0/my-drive" type="checkbox" class="app"/>
+                    <img src="../images/drive.png" width="33" height="33"/>
+                </div>
+                <div id="password">
+                    <a href="https://passwords.google.com/" type="checkbox" class="app"/>
+                    <img src="../images/password.png" width="36" height="36"/>
+                </div>
+                <div id="space">
+                    <a> </a>
+                    <!--Do not get rid of this-->
+                    <img alt="space" src="../images/space.png" width="0" height="0">
+                </div>
+            </div>
+        </div>
+        <style>
+            #appDrawer {
+                display: block;
+                position: relative;
+                width: 33px;
+                height: 33px;
+                top: -86px;
+                margin-left: 47px;
+                -webkit-user-drag: none;
+
+            }
+
+            #space {
+                display: block;
+                width: 2px;
+                height: 10px;
+                position: relative;
+            }
+
+            #space1 {
+                display: block;
+                width: 2px;
+                height: 5px;
+                position: relative;
+            }
+
+            #apps {
+                outline: none;
+                -webkit-user-drag: none;
+
+            }
+
+            #drive {
+                -webkit-user-drag: none;
+                /*margin-left: -20px;*/
+            }
+
+            #cal {
+                margin-top: -42.5px;
+                -webkit-user-drag: none;
+                margin-left: 20px;
+            }
+
+            #youtube {
+                margin-top: 3px;
+                -webkit-user-drag: none;
+                 margin-left: -20px;
+            }
+
+            #TV {
+                margin-top: -38px;
+                -webkit-user-drag: none;
+                margin-left: 20px;
+            }
+            #custom_cal{
+                margin-left: -20px;
+                -webkit-user-drag: none;
+                filter: saturate(8);
+                cursor: pointer;
+            }
+            #drive{
+                -webkit-user-drag: none;
+                margin-left: -20px;
+            }
+            #password{
+                margin-top: -40px;
+                -webkit-user-drag: none;
+                margin-left: 20px;
+            }
+            #app_1{
+                margin-top: 5px;
+            }
+            #app_2{
+                margin-top: -5px;
+            }
+            #app_3{
+                margin-top: -0px;
+            }
+
+        </style>
+    </div>
+
+</div>
+<style>
+    #icons {
+        position: relative;
+        top: -470px;
+        margin-left: 195px;
+        margin-right: 10px;
+        float: right;
+        user-select: none;
+        -webkit-user-drag: none;
+
+    }
+</style>
+
+<div id="l">
+    <div id="date">
+        <div id="calendar" >
+            <div id="cal_name"></div>
+            <div id="cal_location"></div>
+            <div id="start_end"></div>
+        </div>
+        <div id="date_time">
+            <div id="time">
+            </div>
+            <div id="month">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="all_day">
+    <div id="summary">
+        place_holder
+    </div>
+    <div id="loc">
+        place_holder
+    </div>
+</div>
+
+<style>
+    #time {
+        font-family: Orbitron;
+        font-size: 60px;
+        color: #0f99e3;
+        position: absolute;
+        user-select: none;
+        margin-top: -8px;
+    }
+
+    #month {
+        margin-top: 60px;
+        font-family: Orbitron-light;
+        font-size: 25px;
+        color: #0f99e3;
+        position: absolute;
+        user-select: none;
+
+    }
+
+
+    #date {
+        margin-left: 20px;
+        user-select: none;
+        margin-top: -60px;
+        position: absolute;
+        width: 360px;
+        height: 0px;
+    }
+
+    #cal_name {
+        font-size: 20px;
+        margin-top: 70px;
+        color: #303030;
+        font-family: Orbitron-bold;
+        user-select: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 360px;
+        display: block;
+        overflow: hidden
+    }
+
+    #cal_location {
+        font-size: 20px;
+        margin-top: 2px;
+        font-family: Orbitron-light;
+        user-select: none;
+        color: #303030;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 360px;
+        display: block;
+        overflow: hidden
+    }
+
+    #start_end {
+        font-size: 16px;
+        margin-top: 2px;
+        color: #303030;
+        font-family: Orbitron;
+        user-select: none;
+        width: 360px;
+    }
+
+    #calendar {
+        margin-top: 100px;
+        width: 360px;
+        height: 80px;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    #l {
+        position: absolute;
+        bottom: 240px;
+        height: auto;
+    }
+
+    #link {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    #all_day {
+        margin-top: -470px;
+        margin-left: 20px;
+        user-select: none;
+        position: absolute;
+    }
+
+    #summary {
+        font-size: 20px;
+        font-family: Orbitron-bold;
+        color: #0e0e0e;
+        user-select: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 340px;
+        display: block;
+        overflow: hidden
+    }
+
+    #loc {
+        font-size: 20px;
+        font-family: Orbitron-light;
+        color: #0e0e0e;
+        user-select: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 340px;
+        display: block;
+        overflow: hidden
+    }
+
+    @font-face {
+        font-family: "Orbitron-light";
+        src: url("../fonts/orbitron-light.otf");
+    }
+
+    @font-face {
+        font-family: "Orbitron";
+        src: url("../fonts/orbitron-medium.otf");
+    }
+
+    @font-face {
+        font-family: "Orbitron-black";
+        src: url("../fonts/orbitron-black.otf");
+    }
+
+    @font-face {
+        font-family: "Orbitron-bold";
+        src: url("../fonts/orbitron-bold.otf");
+    }
+</style>
+
+<div id="description_container">
+    <div id="desc_con">
+        <div id="description"></div>
+    </div>
+    <div id="red_dot" class="red_dot"></div>
+    <style>
+        .dot {
+            height: 15px;
+            width: 15px;
+            background-color: #383838;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+        }
+        .dot_cont {
+            padding-right: 3px;
+        }
+        #description_container{
+            background-color:  #151515;
+            width: 350px;
+            height: 560px;
+            margin-left: 10px;
+            bottom: 0;
+            margin-bottom: 125px;
+            position: absolute;
+            border-radius: 10px;
+
+            visibility: hidden;  
+            
+        }
+        #desc_con{
+            background-color: #151515;
+            width: 320px;
+            height: 520px;
+            margin-left: 20px;
+            margin-top: 20px;
+            overflow: hidden;
+            overflow-y:scroll;
+            position: absolute;
+        }
+        #description{
+            width: 300px;
+            font-size: 18px;
+            font-family:'Courier New', Courier, monospace;
+            color:#a1a1a1;
+            position: absolute;
+        }
+        .red_dot{
+            position: absolute;
+            height: 15px;
+            width: 15px;
+            background-color: #be0000;
+            border-radius: 50%;
+            margin-right: 4px;
+            margin-top: 4px;
+            display: inline-block;
+            right: 0;
+            cursor: pointer;
+        }
+        #desc_con::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        #desc_con::-webkit-scrollbar-thumb {
+            background: #303030;
+            border-radius: 20px;
+        }
+
+        #desc_con::-webkit-scrollbar-track {
+            background: #0e0e0e;
+            border-radius: 20px;
+        } 
+        a{
+            color: #0f99e3;
+        }   
+        .attachment{
+            height: 25px;
+            width: 310px;
+            overflow: hidden;
+            border-radius: 5px;
+            margin-top: 2px;
+        }
+        .attach_image{
+            margin-top: 4px;
+            margin-left: 2px;
+        }
+        .attach_name{
+            width: 80px;
+            margin-left: 18px;
+            margin-top: -20px;
+            white-space: nowrap;
+            color: #0f99e3;
+        }
+        .no_underline{
+            text-decoration: none;
+        }
+    </style>
+</div>
+
+</body>
+
+<style>
+    body {
+        overflow-y: hidden; /* Hide vertical scrollbar */
+        overflow-x: hidden; /* Hide horizontal scrollbar */
+    }
+</style>
+
+</html>

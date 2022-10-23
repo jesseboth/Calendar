@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <style>
+        :root {
+            --width: 145px;
+            --height: 116px;
+        }
+
+        .cal {
+            position: absolute;
+            display: inline-grid;
+            grid-template-columns: auto auto auto auto auto auto auto;
+            background-color: #0e0e0e;
+            margin-top: 110px;
+            margin-left: 31.5%;
+            user-select: none;
+        }
+
+        .day {
+            background-color: #0e0e0e;
+            border: 1px solid #0f99e3;
+            text-align: start;
+            text-indent: 2px;
+            width: var(--width);
+            height: var(--height);
+            font-size: 15px;
+            color: #0f99e3;
+            font-family: Orbitron;
+            user-select: none;
+            padding-top: 2px;
+            position: relative;
+        }
+        .start{
+            background-color: #0e0e0e;
+            border: 1px solid #0f99e3;
+            text-align: start;
+            text-indent: 2px;
+            width: var(--width);
+            height: var(--height);
+            font-size: 15px;
+            color: #0f99e3;
+            font-family: Orbitron;
+            user-select: none;
+            padding-top: 2px;
+            position: relative;
+        }
+        .week{
+            background-color: #0f99e3;
+            width: var(--width);
+            height: 20px;
+            text-align: center;
+            border: 1px solid #0f99e3;
+            border-bottom: hidden;
+            font-family: Orbitron;
+            user-select: none;
+            padding-top: 5px;
+            font-size: 18px;
+        }
+        .extra{
+            visibility: hidden;
+            background-color: #0e0e0e;
+            border: 1px solid #0f99e3;
+            text-align: start;
+            text-indent: 2px;
+            width: var(--width);
+            height: 0px;  /*half of total*/
+            font-size: 15px;
+            color: #0f99e3;
+            font-family: Orbitron;
+            user-select: none;
+            padding-top: 2px;
+            position: relative;
+        }
+        .event{
+            color: #015bbc;
+            font-size: 14px;
+            user-select: none;
+            text-align: left;
+            margin-left: 3px;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-top: 2px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 140px;
+            display: block;
+            overflow: hidden
+
+        }
+        .event_extra{
+            color: #015bbc;
+            font-size: 12px;
+            user-select: none;
+            width: var(--width);
+            font-family: wingdings;
+            text-align: center;
+            overflow: hidden;
+            position: absolute;
+            bottom: 0;
+        }
+
+        #today{
+            position: absolute;
+            width: 450px;
+        }
+        #today_container{
+            position: absolute;
+            height: 725px;
+            width: 450px;
+            margin-top: 75px;
+            margin-left: 20px;
+            overflow: hidden;
+        }
+
+        #time{
+            font-family: Orbitron;
+            font-size: 75px;
+            color: #0f99e3;
+            position: absolute;
+            user-select: none;
+            margin-left: 20px;
+            bottom: 0;
+        }
+        #month{
+            font-family: Orbitron-light;
+            font-size: 30px;
+            color: #0f99e3;
+            position: absolute;
+            user-select: none;
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+
+        .none{
+            font-family: Orbitron-bold;
+            font-size: 30px;
+            color: #383838;
+        }
+        .summary{
+            font-family: Orbitron-bold;
+            font-size: 28px;
+            color: #383838;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 450px;
+            display: block;
+            overflow: hidden
+        }
+        .location{
+            font-family: Orbitron-light;
+            font-size: 28px;
+            color: #383838;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 450px;
+            display: block;
+            overflow: hidden
+        }
+        .duration{
+            font-family: Orbitron;
+            font-size: 24px;
+            color: #383838;
+            white-space: nowrap;
+        }
+        .event_container{
+            height: 96px;
+            width: 450px;
+        }
+        .break {
+            height: 10px;
+        }
+        #link{
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .mini_weather{
+            width: 35px;
+            height: 22px;
+            margin-left: 102px;
+            position: relative;
+            margin-top: -15px;
+        }
+        .mini_weather_icon{
+            width: 36px;
+            height: 36px;
+            margin-left: -18px;
+            position: absolute;
+            margin-top: -6px;
+        }
+        .mini_weather_temp{
+            margin-top: 2px;
+            position: absolute;
+            margin-left: 20px;
+        }
+        .mini_weather_temp_sub{
+            font-size: 10px;
+            font-family: Orbitron-light;
+            color: #0f99e3;
+        }
+
+        .weather{
+            visibility: hidden;
+            position: absolute;
+            margin-top: -5px;
+        }
+        .weather_icon{
+            height: 95px;
+            width: 95px;
+            margin-left: -8px;
+        }
+
+        .weather_temp{
+            font-family: Orbitron-bold;
+            font-size: 25px;
+            color: #0f99e3;
+            margin-top: -90px;
+            margin-left: 60px;
+        }
+
+    </style>
+
+</head>
+<body style="background: #0e0e0e" onload="run()">
+
+<div id="month"></div>
+
+<div class="cal">
+    <div class="week" id="sun">Sunday</div>
+    <div class="week" id="mon">Monday</div>
+    <div class="week" id="tue">Tuesday</div>
+    <div class="week" id="wed">Wednesday</div>
+    <div class="week" id="thu">Thursday</div>
+    <div class="week" id="fri">Friday</div>
+    <div class="week" id="sat">Saturday</div>
+
+    <div class="start" id="1" onclick="click_event(1)"></div>
+    <div class="start" id="2" onclick="click_event(2)"></div>
+    <div class="start" id="3" onclick="click_event(3)"></div>
+    <div class="start" id="4" onclick="click_event(4)"></div>
+    <div class="start" id="5" onclick="click_event(5)"></div>
+    <div class="start" id="6" onclick="click_event(6)"></div>
+    <div class="start" id="7" onclick="click_event(7)"></div>
+    <div class="day" id="8" onclick="click_event(8)"></div>
+    <div class="day" id="9" onclick="click_event(9)"></div>
+    <div class="day" id="10" onclick="click_event(10)"></div>
+    <div class="day" id="11" onclick="click_event(11)"></div>
+    <div class="day" id="12" onclick="click_event(12)"></div>
+    <div class="day" id="13" onclick="click_event(13)"></div>
+    <div class="day" id="14" onclick="click_event(14)"></div>
+    <div class="day" id="15" onclick="click_event(15)"></div>
+    <div class="day" id="16" onclick="click_event(16)"></div>
+    <div class="day" id="17" onclick="click_event(17)"></div>
+    <div class="day" id="18" onclick="click_event(18)"></div>
+    <div class="day" id="19" onclick="click_event(19)"></div>
+    <div class="day" id="20" onclick="click_event(20)"></div>
+    <div class="day" id="21" onclick="click_event(21)"></div>
+    <div class="day" id="22" onclick="click_event(22)"></div>
+    <div class="day" id="23" onclick="click_event(23)"></div>
+    <div class="day" id="24" onclick="click_event(24)"></div>
+    <div class="day" id="25" onclick="click_event(25)"></div>
+    <div class="day" id="26" onclick="click_event(26)"></div>
+    <div class="day" id="27" onclick="click_event(27)"></div>
+    <div class="day" id="28" onclick="click_event(28)"></div>
+    <div class="day" id="29" onclick="click_event(29)"></div>
+    <div class="day" id="30" onclick="click_event(30)"></div>
+    <div class="day" id="31" onclick="click_event(31)"></div>
+    <div class="day" id="32" onclick="click_event(32)"></div>
+    <div class="day" id="33" onclick="click_event(33)"></div>
+    <div class="day" id="34" onclick="click_event(34)"></div>
+    <div class="day" id="35" onclick="click_event(35)"></div>
+
+    <div class="extra" id="36" onclick="click_event(36)"></div>
+    <div class="extra" id="37" onclick="click_event(37)"></div>
+    <div class="extra" id="38" onclick="click_event(38)"></div>
+    <div class="extra" id="39" onclick="click_event(39)"></div>
+    <div class="extra" id="40" onclick="click_event(40)"></div>
+    <div class="extra" id="41" onclick="click_event(41)"></div>
+    <div class="extra" id="42" onclick="click_event(42)"></div>
+
+
+</div>
+<div class="weather"></div>
+<div id="today_container">
+<div id="today">
+    <div class="event_container"></div>
+</div>
+</div>
+<div id="time"></div>
+<script type="text/javascript" src="../js/calendar.js"></script>
+<script type="text/javascript" src="../js/events.js"></script>
+</body>
+</html>
+
+<style>
+    @font-face {
+        font-family: "Orbitron-light";
+        src: url("../fonts/orbitron-light.otf");
+    }
+
+    @font-face {
+        font-family: "Orbitron";
+        src: url("../fonts/orbitron-medium.otf");
+    }
+    @font-face {
+        font-family: "Orbitron-black";
+        src: url("../fonts/orbitron-black.otf");
+    }
+    @font-face {
+        font-family: "Orbitron-bold";
+        src: url("../fonts/orbitron-bold.otf");
+    }
+    @font-face {
+        font-family: "wingdings";
+        src: url("../fonts/wingding.ttf");
+    }
+</style>
