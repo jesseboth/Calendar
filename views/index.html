@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Tab</title>
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
+</head>
+<body style="background: #0e0e0e" ">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script type="text/javascript" src="src/code.js">console.log("here")</script>
+<script type="text/javascript" src="src/init_agenda.js"></script>
+<script type="text/javascript" src="src/agenda.js"></script>
+<script type="text/javascript" src="src/events.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<canvas id="c"></canvas>
+
+<div class="wrap">
+    <div class="search">
+        <input type="text" class="searchTerm" placeholder="Search Google" autocomplete="off"
+               id="comment">
+        <button type="submit" class="searchButton">
+            <img id="search_image" src="img/search_img.png" style="height: 23px;">
+        </button>
+    </div>
+    <div id=google>
+        <img id='img_google' src="img/google.png" style="height: 100px; width:300px">
+    </div>
+</div>
+<div id="icons">
+    <div class="icon" id=gmail>
+        <a id="email_link" href="https://mail.google.com/mail/u/0/#inbox">
+            <img id="email" alt="gmail" src="img/gmail.png" height="23" width="35">
+        </a>
+    </div>
+
+    <div  class="icon" id="appDrawer">
+        <input type="image" src="img/app_drawer.png" id="apps" height="33" width="33">
+ 
+        <div id="app_select_1" class="active" style="display:none">
+
+            <div id="custom_cal" class="app">
+                <img class="calendarimg" src="img/default_calendar.png"
+                    width="38" height="38"/>
+            </div>
+            <div id="cal" class="app">
+                <a href="https://calendar.google.com/calendar/" type="checkbox">
+                <img class="calendarimg" src="img/default_google_calendar.png"
+                    width="38" height="38"/>
+                </a>
+            </div>
+        
+            <div id="youtube" class="app">
+                <a href="https://www.youtube.com/" type="checkbox">
+                    <img alt="youtube" src="img/youtube.png" width="33" height="33"/>
+                </a>
+            </div>
+            <div id="TV" class="app">
+                <a href="https://tv.youtube.com/" type="checkbox">
+                    <img alt="TV" src="img/youtube_tv.png" width="36" height="36"/>
+                </a>
+            </div>
+        
+        
+            <div id="drive" class="app">
+                <a href="https://drive.google.com/drive/u/0/my-drive" type="checkbox">
+                    <img src="img/drive.png" width="33" height="33"/>
+                </a>
+            </div>
+            <div id="password" class="app">
+                <a href="https://passwords.google.com/" type="checkbox">
+                    <img src="img/password.png" width="36" height="36"/>
+                </a>
+            </div>
+
+            </div>
+
+            <div id="app_select_2" class="inactive" style="display:none">
+                <div id="cal_2" class="app">
+                    <a href="https://calendar.google.com/calendar/" id="cal_link" type="checkbox">
+                        <img class="calendarimg" src="img/Google_calendar.png"
+                        width="38" height="38"/>
+                    </a>
+                </div>
+                <div id="drive_2" class="app">
+                    <a href="https://drive.google.com/drive/u/0/my-drive" id="drive_link" type="checkbox">
+                        <img src="img/drive.png" width="33" height="33"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+    <div  class="icon" id="user">
+        <input id="pic" type="image" alt="apps" height="36" width="36" src="img/profile.png"/>
+
+        <div id="logins" style="visibility:hidden">
+            <div style="margin-top: 8px;">
+                <div id="user1">
+                    <img id="img_user1"src="img/ub.png" width="36" height="36"/>
+                </div>
+                <div id="user2">
+                    <img id="img_user2" src="img/anon.png" width="36" height="36" />
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<div id="l">
+    <div id="date">
+        <div id="calendar" >
+            <div id="cal_name"></div>
+            <div id="cal_location"></div>
+            <div id="start_end"></div>
+        </div>
+        <div id="date_time">
+            <div id="time">
+            </div>
+            <div id="month">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="all_day">
+    <div id="summary">
+        
+    </div>
+    <div id="loc">
+
+    </div>
+</div>
+
+<div id="description_container">
+    <div id="desc_con">
+        <div id="description"></div>
+    </div>
+    <div id="red_dot" class="red_dot"></div>
+
+</div>
+
+</body>
+
+</html>

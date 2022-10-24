@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html >
 <head>
+    <title>Calendar</title>
+    <link rel="shortcut icon" type="image/png" href="../images/favicon.png">
     <style>
         :root {
-            --width: 145px;
-            --height: 116px;
+            --width: 130px;
+            --height: 108px;
         }
-
         .cal {
             position: absolute;
             display: inline-grid;
             grid-template-columns: auto auto auto auto auto auto auto;
             background-color: #0e0e0e;
-            margin-top: 110px;
+            margin-top: 75px;
             margin-left: 31.5%;
             user-select: none;
         }
@@ -28,7 +29,6 @@
             color: #0f99e3;
             font-family: Orbitron;
             user-select: none;
-            padding-top: 2px;
             position: relative;
         }
         .start{
@@ -42,20 +42,17 @@
             color: #0f99e3;
             font-family: Orbitron;
             user-select: none;
-            padding-top: 2px;
             position: relative;
         }
         .week{
             background-color: #0f99e3;
             width: var(--width);
-            height: 20px;
+            height: 25px;
             text-align: center;
             border: 1px solid #0f99e3;
             border-bottom: hidden;
             font-family: Orbitron;
             user-select: none;
-            padding-top: 5px;
-            font-size: 18px;
         }
         .extra{
             visibility: hidden;
@@ -69,25 +66,37 @@
             color: #0f99e3;
             font-family: Orbitron;
             user-select: none;
-            padding-top: 2px;
             position: relative;
         }
         .event{
             color: #015bbc;
-            font-size: 14px;
+            font-size: 13px;
             user-select: none;
             text-align: left;
             margin-left: 3px;
+            margin-top: 2px;
             overflow: hidden;
             white-space: nowrap;
-            margin-top: 2px;
-            white-space: nowrap;
             text-overflow: ellipsis;
-            width: 140px;
+            width: 127px;
             display: block;
             overflow: hidden
-
         }
+
+        .event_todo{
+            color: #ff9900;
+        }
+        .event_work{
+            color: #00ff8c;
+        }
+        .event_exam{
+            color: #bd0000;
+        }
+        .event_quiz{
+            color: #eef72b
+        }
+
+
         .event_extra{
             color: #015bbc;
             font-size: 12px;
@@ -96,6 +105,7 @@
             font-family: wingdings;
             text-align: center;
             overflow: hidden;
+            margin-top: -1px;
             position: absolute;
             bottom: 0;
         }
@@ -106,9 +116,9 @@
         }
         #today_container{
             position: absolute;
-            height: 725px;
+            height: 565px;
             width: 450px;
-            margin-top: 75px;
+            margin-top: 70px;
             margin-left: 20px;
             overflow: hidden;
         }
@@ -117,11 +127,12 @@
             font-family: Orbitron;
             font-size: 75px;
             color: #0f99e3;
-            position: absolute;
+            position: fixed;
             user-select: none;
             margin-left: 20px;
-            bottom: 0;
+	        bottom: 0;
         }
+
         #month{
             font-family: Orbitron-light;
             font-size: 30px;
@@ -134,12 +145,12 @@
 
         .none{
             font-family: Orbitron-bold;
-            font-size: 30px;
+            font-size: 25px;
             color: #383838;
         }
         .summary{
             font-family: Orbitron-bold;
-            font-size: 28px;
+            font-size: 25px;
             color: #383838;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -149,7 +160,7 @@
         }
         .location{
             font-family: Orbitron-light;
-            font-size: 28px;
+            font-size: 25px;
             color: #383838;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -159,16 +170,16 @@
         }
         .duration{
             font-family: Orbitron;
-            font-size: 24px;
+            font-size: 20px;
             color: #383838;
             white-space: nowrap;
+        }
+        .break {
+            height: 10px;
         }
         .event_container{
             height: 96px;
             width: 450px;
-        }
-        .break {
-            height: 10px;
         }
         #link{
             color: inherit;
@@ -177,25 +188,34 @@
 
         .mini_weather{
             width: 35px;
-            height: 22px;
-            margin-left: 102px;
+            height: 20px;
+            margin-left: 90px;
             position: relative;
-            margin-top: -15px;
+            margin-top: -20px;
         }
+
         .mini_weather_icon{
-            width: 36px;
-            height: 36px;
-            margin-left: -18px;
+            width: 32px;
+            height: 32px;
+            margin-left: -12px;
             position: absolute;
-            margin-top: -6px;
+            margin-top: -1px;
         }
+
+        #mini_01d{
+            width: 28px;
+            height: 28px;
+        }
+
         .mini_weather_temp{
-            margin-top: 2px;
+            margin-top: 4px;
             position: absolute;
             margin-left: 20px;
+            font-size: 8px;
+
         }
         .mini_weather_temp_sub{
-            font-size: 10px;
+            font-size: 8px;
             font-family: Orbitron-light;
             color: #0f99e3;
         }
@@ -206,23 +226,169 @@
             margin-top: -5px;
         }
         .weather_icon{
-            height: 95px;
-            width: 95px;
+            height: 90px;
+            width: 90px;
             margin-left: -8px;
         }
-
+        #icon_01d{
+            width: 88px;
+            height: 88px; 
+        }
         .weather_temp{
             font-family: Orbitron-bold;
-            font-size: 25px;
+            font-size: 20px;
             color: #0f99e3;
             margin-top: -90px;
             margin-left: 60px;
         }
 
-    </style>
+        #back{
+            position: absolute;
+            bottom: 0;
+            float: right;
+            right: 0;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        #arrows{
+            position: absolute;
+            bottom:0;
+            float: right;
+            width: 925px;
+            /* height: 50px; */
+            right:0;
+            margin-right: 120px;
+            margin-left: 483px;
+            margin-bottom: 10px;
+            user-select: none;
+        }
+        .arrow{
+            height: 50px;
+            width:50px;
+            cursor: pointer;
+        }
+        #forward{
+            /* margin-left: 100px; */
+            margin-left: 875px;
+            margin-top: -50px;
+            transform: rotateY(180deg)
+        }
+        .dot {
+            height: 15px;
+            width: 15px;
+            background-color: #383838;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+        }
+        #description_container{
+            background-color: #151515;
+            width: 450px;
+            height: 560px;
+            margin-left: 10px;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+            position: absolute;
+            border-radius: 10px;
 
+            visibility: hidden;  
+            
+        }
+        #desc_con{
+            background-color: #151515;
+            width: 420px;
+            height: 520px;
+            margin-left: 20px;
+            margin-top: 20px;
+            overflow: hidden;
+            overflow-y:scroll;
+            position: absolute;
+        }
+        #description{
+            width: 410px;
+            font-size: 18px;
+            font-family:'Courier New', Courier, monospace;
+            color:#a1a1a1;
+            position: absolute;
+        }
+        .red_dot{
+            position: absolute;
+            height: 15px;
+            width: 15px;
+            background-color: #be0000;
+            border-radius: 50%;
+            margin-right: 5px;
+            margin-top: 5px;
+            display: inline-block;
+            right: 0;
+            cursor: pointer;
+        }
+        #desc_con::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        #desc_con::-webkit-scrollbar-thumb {
+            background: #303030;
+            border-radius: 20px;
+        }
+
+        #desc_con::-webkit-scrollbar-track {
+            background: #0e0e0e;
+            border-radius: 20px;
+        }
+        a{
+            color: #0f99e3;
+        }
+        .attachment{
+            height: 25px;
+            width: 410px;
+            overflow: hidden;
+            border-radius: 5px;
+            margin-top: 2px;
+        }
+        .attach_image{
+            margin-top: 4px;
+            margin-left: 2px;
+        }
+        .attach_name{
+            width: 80px;
+            margin-left: 18px;
+            margin-top: -20px;
+            white-space: nowrap;
+            color: #0f99e3;
+        }
+        .no_underline{
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        function re(){
+            setInterval(resize, 1000)
+        }
+        function resize(){
+            if(window.innerWidth < 1000 || window.innerHeight > window.innerWidth){
+                document.getElementsByClassName("cal")[0].style.display = "none"
+                document.getElementById("arrows").style.visibility = "hidden"
+            }
+            else{
+                document.getElementsByClassName("cal")[0].style.display = "inline-grid"
+                document.getElementById("arrows").style.visibility = "visible"
+            }
+            if( window.innerHeight < window.innerWidth){
+                dpi = window.devicePixelRatio
+                base = 1.25
+                dif = base - dpi
+                document.body.style.zoom = 1+dif
+            }
+            else if(window.devicePixelRatio == 1.5){
+                document.body.style.zoom = 1.35
+            }
+        }
+    </script>
 </head>
-<body style="background: #0e0e0e" onload="run()">
+<body style="background: #0e0e0e" onload="resize(); re(); run()">
 
 <div id="month"></div>
 
@@ -282,14 +448,33 @@
 
 </div>
 <div class="weather"></div>
+
 <div id="today_container">
-<div id="today">
+<div id="today"></div>
     <div class="event_container"></div>
 </div>
-</div>
 <div id="time"></div>
+<div id="back" onclick="backButton()">
+    <img alt="back_button" src="../images/back.png" width="40" height="40"/>
+</div>
+<div id="arrows">
+    <div class="arrow" id="backward" onclick="backward_month()">
+        <img src="../images/arrow.png" width="50" height="50"/>
+    </div>
+    <div class="arrow" id="forward" onclick="forward_month()">
+        <img src="../images/arrow.png" width="50" height="50"/>
+    </div>
+</div>
+
+<div id="description_container" onclick="description_clicked_on()">
+    <div id="desc_con">
+        <div id="description"></div>
+    </div>
+    <div class="red_dot" onclick="document.getElementById('description_container').style.visibility = 'hidden'"></div>
+</div>
 <script type="text/javascript" src="../js/calendar.js"></script>
 <script type="text/javascript" src="../js/events.js"></script>
+
 </body>
 </html>
 
@@ -314,5 +499,10 @@
     @font-face {
         font-family: "wingdings";
         src: url("../fonts/wingding.ttf");
+    }
+    
+    body {
+        overflow-y: hidden; /* Hide vertical scrollbar */
+        overflow-x: hidden; /* Hide horizontal scrollbar */
     }
 </style>

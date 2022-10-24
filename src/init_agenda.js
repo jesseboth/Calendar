@@ -18,7 +18,8 @@ function run() {
           app_clicked_on()
         })
       })
-      document.querySelector('.searchTerm').addEventListener('keypress', clickyClick)
+    document.querySelector('.searchTerm').addEventListener('keypress', clickyClick)
+
     get_user()
     updateTime();
     set_all_day();

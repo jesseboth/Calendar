@@ -61,6 +61,9 @@ const server = http.createServer((req, res) => {
         case '.txt':
             contentType = 'text/plain';
             break;
+        case '.otf':
+            contentType = 'application/x-font-opentype';
+            break;
         default:
             contentType = 'text/html';
     }

@@ -1,13 +1,13 @@
 {
   "name": "05tut",
   "version": "1.0.0",
-  "description": "Node.js Web Server tutorial",
+  "description": "Calendar New Tab",
   "main": "server.js",
   "scripts": {
     "start": "node server",
     "dev": "nodemon server"
   },
-  "author": "Dave Gray",
+  "author": "Jesse Both",
   "license": "ISC",
   "dependencies": {
     "date-fns": "^2.23.0",

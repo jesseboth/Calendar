@@ -57,7 +57,8 @@ function updateTime() {
   document.getElementById("time").innerHTML = current_time;
   document.getElementById("time").style.fontFamily = "Orbitron";
   document.getElementById("month").innerHTML = date;
-  document.getElementById("month").style.fontFamily = "Orbitron-light";
+  document.getElementById("month").style.fontFamily = "Orbitron";
+  document.getElementById("month").style.fontWeight = "100";
 
   if(current == null || (!to_tomorrow && parseInt(time_24) > now["end"])){
     get_events(key, time_24);
@@ -136,6 +137,7 @@ function get_events(key, time) {
   if (current === null || time_int > dict[key][current_i]["end"]) {
     while (true) {
       if (
+        dict[key] != undefined &&
         dict[key].length > 0 &&
         dict[key].length > i &&
         dict[key][i]["all_day"]
@@ -156,6 +158,7 @@ function get_events(key, time) {
     }
     while (true) {
       if (
+        dict[key] != undefined &&
         i < dict[key].length &&
         parseInt(dict[key][i]["start"]) < parseInt(dict[key][i]["end"]) &&
         time_int > parseInt(dict[key][i]["end"])
@@ -165,7 +168,7 @@ function get_events(key, time) {
         break;
       }
     }
-    if (i < dict[key].length) {
+    if (dict[key] != undefined && i < dict[key].length) {
       current = dict[key][i];
       current_i = i;
       if (i + 1 < dict[key].length) {
@@ -256,7 +259,8 @@ function set_event(all_day, todo, name, start, end, location) {
     document.getElementById("cal_name").innerHTML = "place_holder";
     document.getElementById("cal_location").innerHTML = name; /*shift down*/
     document.getElementById("start_end").innerHTML = duration;
-    document.getElementById("cal_location").style.fontFamily = "Orbitron-bold";
+    document.getElementById("cal_location").style.fontFamily = "Orbitron";
+    document.getElementById("cal_location").style.fontWeight = "bold";
   } else {
     document.getElementById("cal_name").innerHTML = name;
     document.getElementById("cal_name").style.opacity = "1";
@@ -264,7 +268,8 @@ function set_event(all_day, todo, name, start, end, location) {
     document.getElementById("cal_location").style.opacity = "1";
     document.getElementById("start_end").innerHTML = duration;
     document.getElementById("start_end").style.opacity = "1";
-    document.getElementById("cal_location").style.fontFamily = "Orbitron-light";
+    document.getElementById("cal_location").style.fontFamily = "Orbitron";
+    document.getElementById("cal_location").style.fontWeight = "100";
   }
 
   if (!to_next) {
@@ -358,7 +363,7 @@ function tomorrow_toggle() {
 }
 function set_tomorrow(key) {
   var dict = dictionary();
-  if (dict[key].length > 0) {
+  if (dict[key] != undefined && dict[key].length > 0) {
     document.getElementById("cal_name").style.color = "#383838";
     document.getElementById("cal_name").style.opacity = "1";
     document.getElementById("cal_location").style.color = "#383838";
@@ -513,7 +518,6 @@ function show_description(i, all) {
       "</b>" +
       "<br> <br>" +
       dict[all_key][i]["description"];
-      console.log(dict[all_key][i]["description"])
   }
   document.getElementById("description").innerHTML = text;
   document.getElementById("description_container").style.visibility = "visible";

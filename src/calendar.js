@@ -100,7 +100,8 @@ function set_time(time, date, day, color) {
     document.getElementById("time").innerHTML = time;
     document.getElementById("time").style.fontFamily = "Orbitron";
     document.getElementById("month").innerHTML = date;
-    document.getElementById("month").style.fontFamily = "Orbitron-light";
+    document.getElementById("month").style.fontFamily = "Orbitron";
+    document.getElementById("month").style.fontWeight = "100";
     document.getElementById((day).toString()).style.borderColor = color
     if(color !== ""){
         document.getElementById((day).toString()).style.color = color
@@ -246,13 +247,14 @@ function long_cal(offset, month_length, month, year) {
             document.getElementById(start.toString()).innerText = day.toString()
             set_mini_weather(start, key)
             adjust_weather_css(start, key)
-            document.getElementById(start.toString()).innerHTML += "<div class=\"event _" + start + "_0\">" + dict[key][0]["summary"] + "</div>"
-
+            document.getElementById(start.toString()).innerHTML += "<div class=\"event\" id=\"_" + start + "_0\">" + dict[key][0]["summary"] + "</div>"
+            change_event_color(dict[key][0]["todo"], start, 0)
+            
             if (dict[key].length > 1 && half_width >= 58) {
-                document.getElementById(start.toString()).innerHTML += "<div class=\"event _" + start + "_0\">" + dict[key][1]["summary"] + "</div>"
-
-                document.getElementsByClassName("_" + start + "_0")[0].style.fontSize = "12px"
-                document.getElementsByClassName("_" + start + "_0")[1].style.fontSize = "12px"
+                document.getElementById(start.toString()).innerHTML += "<div class=\"event\" id=\"_" + start + "_1\">" + dict[key][1]["summary"] + "</div>"
+                change_event_color(dict[key][1]["todo"], start, 1)
+                document.getElementById("_" + start + "_0").style.fontSize = "12px"
+                document.getElementById("_" + start + "_1").style.fontSize = "12px"
                 cur++
             }
 
@@ -260,10 +262,12 @@ function long_cal(offset, month_length, month, year) {
             for (let j = cur; j < dict[key].length; j++) {
                 if (!overflow) {
                     overflow = true
-                    document.getElementById(start.toString()).innerHTML += "<div class=\"event_extra\" id=\"_" + start + "_" + "\">l</div>"
+                    document.getElementById(start.toString()).innerHTML += "<div class=\"event_extra\" id=\"_" + start + "_" + "\"></div>"
+                    document.getElementById("_" + start.toString() + "_").innerHTML += get_extraevent_color(dict[key][j]["todo"])
 
                 } else {
-                    document.getElementById("_" + start.toString() + "_").innerHTML += "l"
+                    // document.getElementById("_" + start.toString() + "_").innerHTML += "l"
+                    document.getElementById("_" + start.toString() + "_").innerHTML += get_extraevent_color(dict[key][j]["todo"])
                 }
             }
         } else {
@@ -284,6 +288,7 @@ function long_cal(offset, month_length, month, year) {
             document.getElementById(start.toString()).innerText = day.toString()
             set_mini_weather(start, key)
             adjust_weather_css(start, key)
+
             document.getElementById(start.toString()).innerHTML += "<div class=\"event _" + start + "_0\">" + dict[key][0]["summary"] + "</div>"
 
             if (dict[key].length > 1 && half_width >= 58) {
@@ -326,6 +331,39 @@ function long_cal(offset, month_length, month, year) {
             day++
         }
         start++
+    }
+}
+
+function change_event_color(string, offset, i){
+    if(document.getElementById("_" + offset + "_" + i ) == null){
+        return
+    }
+    if(string == "TODO"){
+        document.getElementById("_" + offset + "_" + i ).classList.add("event_todo")
+    }
+    else if(string== "WORK"){
+        document.getElementById("_" + offset + "_" + i ).classList.add("event_work")
+    }
+    else if(string == "QUIZ"){
+        document.getElementById("_" + offset + "_" + i ).classList.add("event_quiz")
+    }
+    else if(string == "EXAM" ){
+        document.getElementById("_" + offset + "_" + i ).classList.add("event_exam")
+    }
+}
+
+function get_extraevent_color(string){
+    if(string == null){
+        return "l"
+    }
+    if(string == "TODO"){
+        return "<a class='event_todo'>l</a>"
+    }
+    else if(string== "WORK"){
+        return "<a class='event_work'>l</a>"
+    }
+    else if(string == "QUIZ" || string == "EXAM" ){
+        return "<a class='event_exam'>l</a>"
     }
 }
 
@@ -387,12 +425,15 @@ function set_events(month, day, year, off) {
         if (j > num_events) {
             if (!overflow) {
                 overflow = true
-                document.getElementById(off.toString()).innerHTML += "<div class=\"event_extra\" id=\"_" + off + "_" + "\">l</div>"
+                document.getElementById(off.toString()).innerHTML += "<div class=\"event_extra\" id=\"_" + off + "_" + "\"></div>"
+                document.getElementById("_" + off.toString() + "_").innerHTML += get_extraevent_color(dict[key][j]["todo"])
             } else {
-                document.getElementById("_" + off.toString() + "_").innerHTML += "l"
+                document.getElementById("_" + off.toString() + "_").innerHTML += get_extraevent_color(dict[key][j]["todo"])
             }
         } else {
             document.getElementById(off.toString()).innerHTML += "<div class=\"event\" id=\"_" + off + "_" + j + "\">" + dict[key][j]["summary"] + "</div>"
+            change_event_color(dict[key][j]["todo"], off, j)
+
         }
     }
 }
@@ -560,12 +601,13 @@ let exam_15 = ""
 function set_current_event(key, time_24) {
     // const base_color = "#0f99e3"
     const base_color = "#bd0000"
-	const all_day_color = "#cfcd6b"
+    const all_day_color = "#d4d4d4"
 	const todo_color = "#ff9900"
     const upcoming_color = "#4bd6d6"
     const grey = "#383838"
 	const finished = "#232323"
-    const work_color = "#ffee00"
+    const work_color = "#00ff8c"
+    const quiz_color = "#EEF72B"
 
     const time = parseInt(time_24)
     const dict = dictionary()
@@ -594,6 +636,9 @@ function set_current_event(key, time_24) {
                 else if(cur["todo"] === "WORK"){
                     change_class_color(names, i, work_color, list.length)
                 }
+                else if(cur["todo"] === "QUIZ"){
+                    change_class_color(names, i,  quiz_color, list.length)
+                }
                 else if(cur["todo"] === "EXAM"){
                     if(d.getSeconds() % 2 == 0){
                         exam_all_day = base_color
@@ -609,6 +654,7 @@ function set_current_event(key, time_24) {
             } else if (time >= start && time <= end) {                
                 if(cur["todo"] == "WORK"){color = work_color}
                 else if(cur["todo"] == "TODO"){color = todo_color}
+                else if(cur["todo"] == "QUIZ"){color = quiz_color}
                 else if(cur["todo"] == "EXAM"){
                     if(d.getSeconds() % 2 == 0){
                         exam_time = base_color
@@ -657,26 +703,30 @@ function set_current_event(key, time_24) {
             }
         }
     } else {
-        for (let i = 0; i < list.length; i++) {
+        for (let i = 0; list != undefined && i < list.length; i++) {
             cur = list[i]
 
             start = cur["start"]
             end = cur["end"]
 
-            if (cur["all_day"]) {
+            // if (cur["all_day"]) {
                 if(cur["todo"] === "TODO"){
                     change_class_color(names, i, todo_color, list.length)
                 }
                 else if(cur["todo"] === "WORK"){
                     change_class_color(names, i, work_color, list.length)
                 }
+                else if(cur["todo"] === "QUIZ"){                    
+                    change_class_color(names, i, quiz_color, list.length)
+                }
                 else if(cur["todo"] === "EXAM"){
                     change_class_color(names, i, base_color, list.length)
                 }
-                else{
+                else if(cur["all_day"]){
                     change_class_color(names, i, all_day_color, list.length)
                 }
-            } else {
+            // }
+             else {
                 change_class_color(names, i, grey, list.length)
             }
         }
