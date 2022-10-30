@@ -12,7 +12,6 @@ function run() {
     document.getElementById("img_user2").addEventListener("click", second_tab);
 
     document.getElementById("apps").addEventListener("click", appToggle);
-    document.getElementById("custom_cal").addEventListener("click", calredirect);
     document.querySelectorAll('.app').forEach(item => {
         item.addEventListener('click', event => {
           app_clicked_on()
@@ -28,8 +27,4 @@ function run() {
     start_color()
     listeners()
     setInterval(updateTime, 100);
-}
-
-function calredirect(){
-  chrome.tabs.update({active: false, url: "file:///C:/Users/jesse/IdeaProjects/Personal-Projects/New_Tab/src/main/calendar/calendar.html"});
 }
