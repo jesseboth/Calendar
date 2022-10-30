@@ -1,6 +1,7 @@
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const ical = require('node-ical')
 const fsPromises = require('fs').promises;
 
 const logEvents = require('./logEvents');
@@ -10,6 +11,18 @@ class Emitter extends EventEmitter { };
 const myEmitter = new Emitter();
 myEmitter.on('log', (msg, fileName) => logEvents(msg, fileName));
 const PORT = process.env.PORT || 8080;
+
+// use the sync function parseFile() to parse this ics file
+const events = ical.sync.parseFile('data/cal.ical');
+// loop through events and log them
+for (const event of Object.values(events)) {
+    console.log(
+        'Summary: ' + event.summary +
+        '\nDescription: ' + event.description +
+        // '\nStart Date: ' + event.start.toISOString() +
+        '\n'
+    );
+};
 
 const serveFile = async (filePath, contentType, response) => {
     try {

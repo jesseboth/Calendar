@@ -2,7 +2,7 @@
 <html >
 <head>
     <title>Calendar</title>
-    <link rel="shortcut icon" type="image/png" href="../images/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <style>
         :root {
             --width: 130px;
@@ -134,7 +134,8 @@
         }
 
         #month{
-            font-family: Orbitron-light;
+            font-family: Orbitron;
+            font-weight: 100;
             font-size: 30px;
             color: #0f99e3;
             position: absolute;
@@ -144,12 +145,14 @@
         }
 
         .none{
-            font-family: Orbitron-bold;
+            font-family: Orbitron;
+            font-weight: bold;
             font-size: 25px;
             color: #383838;
         }
         .summary{
-            font-family: Orbitron-bold;
+            font-family: Orbitron;
+            font-weight: bold;
             font-size: 25px;
             color: #383838;
             white-space: nowrap;
@@ -159,7 +162,8 @@
             overflow: hidden
         }
         .location{
-            font-family: Orbitron-light;
+            font-family: Orbitron;
+            font-weight: 100;
             font-size: 25px;
             color: #383838;
             white-space: nowrap;
@@ -216,7 +220,8 @@
         }
         .mini_weather_temp_sub{
             font-size: 8px;
-            font-family: Orbitron-light;
+            font-family: Orbitron;
+            font-weight: 100;
             color: #0f99e3;
         }
 
@@ -235,7 +240,8 @@
             height: 88px; 
         }
         .weather_temp{
-            font-family: Orbitron-bold;
+            font-family: Orbitron;
+            font-weight: bold;
             font-size: 20px;
             color: #0f99e3;
             margin-top: -90px;
@@ -455,14 +461,14 @@
 </div>
 <div id="time"></div>
 <div id="back" onclick="backButton()">
-    <img alt="back_button" src="../images/back.png" width="40" height="40"/>
+    <img alt="back_button" src="img/back.png" width="40" height="40"/>
 </div>
 <div id="arrows">
     <div class="arrow" id="backward" onclick="backward_month()">
-        <img src="../images/arrow.png" width="50" height="50"/>
+        <img src="img/arrow.png" width="50" height="50"/>
     </div>
     <div class="arrow" id="forward" onclick="forward_month()">
-        <img src="../images/arrow.png" width="50" height="50"/>
+        <img src="img/arrow.png" width="50" height="50"/>
     </div>
 </div>
 
@@ -472,34 +478,34 @@
     </div>
     <div class="red_dot" onclick="document.getElementById('description_container').style.visibility = 'hidden'"></div>
 </div>
-<script type="text/javascript" src="../js/calendar.js"></script>
-<script type="text/javascript" src="../js/events.js"></script>
+<script type="text/javascript" src="src/calendar.js"></script>
+<script type="text/javascript" src="src/events.js"></script>
 
 </body>
 </html>
 
 <style>
-    @font-face {
-        font-family: "Orbitron-light";
-        src: url("../fonts/orbitron-light.otf");
+    /* @font-face {
+        font-family: "Orbitron";
+        src: url("fonts/Orbitron.otf");
     }
 
     @font-face {
         font-family: "Orbitron";
-        src: url("../fonts/orbitron-medium.otf");
+        src: url("fonts/orbitron-medium.otf");
     }
     @font-face {
         font-family: "Orbitron-black";
-        src: url("../fonts/orbitron-black.otf");
+        src: url("fonts/orbitron-black.otf");
     }
     @font-face {
-        font-family: "Orbitron-bold";
-        src: url("../fonts/orbitron-bold.otf");
+        font-family: "Orbitron";
+        src: url("fonts/Orbitron.otf");
     }
     @font-face {
         font-family: "wingdings";
-        src: url("../fonts/wingding.ttf");
-    }
+        src: url("fonts/wingding.ttf");
+    } */
     
     body {
         overflow-y: hidden; /* Hide vertical scrollbar */

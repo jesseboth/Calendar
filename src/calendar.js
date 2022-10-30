@@ -622,7 +622,7 @@ function set_current_event(key, time_24) {
 
     let names = ["summary", "location", "duration", "dot"]
     if (k === key) {
-        for (let i = 0; i < list.length; i++) {
+        for (let i = 0; list != undefined && i < list.length; i++) {
             cur = list[i]
 
             start = cur["start"]
