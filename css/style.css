@@ -90,7 +90,7 @@
     right: 0px;
 }
 
-.icon{    
+.icon{
    margin: auto;
 }
 
@@ -107,7 +107,7 @@
 #appDrawer {
     width: 33px;
     height: 33px;
-    -webkit-user-drag: none;    
+    -webkit-user-drag: none;
 }
 
 #user1 img {
@@ -151,7 +151,7 @@
 }
 
 #app_select_2{
-	grid-template-rows: 40px 40px;   
+	grid-template-rows: 40px 40px;
     margin-top: 5px;
     margin-left: -3px;
 }
@@ -164,6 +164,7 @@
 #time {
     font-family: Orbitron;
     font-size: 60px;
+    font-weight: 800;
     color: #0f99e3;
     position: absolute;
     user-select: none;
@@ -301,8 +302,8 @@
     position: absolute;
     border-radius: 10px;
 
-    visibility: hidden;  
-    
+    visibility: hidden;
+
 }
 #desc_con{
     background-color: #151515;
@@ -345,10 +346,10 @@
 #desc_con::-webkit-scrollbar-track {
     background: #0e0e0e;
     border-radius: 20px;
-} 
+}
 a{
     color: #0f99e3;
-}   
+}
 .attachment{
     height: 25px;
     width: 310px;
@@ -377,114 +378,119 @@ body {
 }
 
 
- 
 
-.virus { 
-    color: white; 
-    margin-left: auto; 
-    margin-right: auto; 
-    font-size: 100px; 
-    position: relative; 
-    user-select: none; 
-    -webkit-user-drag: none; 
-    width: 137px; 
-    height: 175px; 
-    top: -220px; 
-    filter: brightness(25%); 
-} 
-@keyframes noise-anim { 
-    0% {clip-path: inset(10% 0 50% 0);} 
-    5% {clip-path: inset(86% 0 9% 0);} 
-    10% {clip-path: inset(94% 0 1% 0);} 
-    15% {clip-path: inset(19% 0 61% 0);} 
-    20% {clip-path: inset(85% 0 5% 0);} 
-    25% {clip-path: inset(23% 0 76% 0);} 
-    30% {clip-path: inset(75% 0 24% 0);} 
-    35% {clip-path: inset(6% 0 23% 0);} 
-    40% {clip-path: inset(91% 0 1% 0);} 
-    45% {clip-path: inset(93% 0 2% 0);} 
-    50% {clip-path: inset(69% 0 21% 0);} 
-    55% {clip-path: inset(91% 0 7% 0);} 
-    60% {clip-path: inset(82% 0 14% 0);} 
-    65% {clip-path: inset(58% 0 30% 0);} 
-    70% {clip-path: inset(80% 0 21% 0);} 
-    75% {clip-path: inset(15% 0 74% 0);} 
-    80% {clip-path: inset(13% 0 26% 0);} 
-    85% {clip-path: inset(15% 0 12% 0);} 
-    90% {clip-path: inset(39% 0 42% 0);} 
-    95% {clip-path: inset(82% 0 18% 0);} 
-    100% {clip-path: inset(38% 0 26% 0);} 
-} 
-.virus::after { 
-    content: url(img/glitch.png); 
-    position: absolute; 
-    left: 2px; 
-    text-shadow: -1px 0 red; 
-    top: 0; 
-    color: white; 
-    overflow: hidden; 
-    animation: noise-anim 2s infinite linear alternate-reverse; 
-} 
-@keyframes noise-anim-2 { 
-    0% {clip-path: inset(51% 0 9% 0);} 
-    5% {clip-path: inset(22% 0 60% 0);} 
-    10% {clip-path: inset(97% 0 2% 0);} 
-    15% {clip-path: inset(17% 0 60% 0);} 
-    20% {clip-path: inset(15% 0 40% 0);} 
-    25% {clip-path: inset(56% 0 10% 0);} 
-    30% {clip-path: inset(17% 0 82% 0);} 
-    35% {clip-path: inset(39% 0 50% 0);} 
-    40% {clip-path: inset(52% 0 39% 0);} 
-    45% {clip-path: inset(3% 0 25% 0);} 
-    50% {clip-path: inset(87% 0 11% 0);} 
-    55% {clip-path: inset(92% 0 2% 0);} 
-    60% {clip-path: inset(3% 0 36% 0);} 
-    65% {clip-path: inset(48% 0 43% 0);} 
-    70% {clip-path: inset(51% 0 33% 0);} 
-    75% {clip-path: inset(24% 0 50% 0);} 
-    80% {clip-path: inset(38% 0 30% 0);} 
-    85% {clip-path: inset(24% 0 45% 0);} 
-    90% {clip-path: inset(24% 0 11% 0);} 
-    95% {clip-path: inset(100% 0 1% 0);} 
-    100% {clip-path: inset(18% 0 77% 0);} 
-} 
-.virus::before { 
-    content: url(images/glitch.png); 
-    position: absolute; 
-    left: -2px; 
-    text-shadow: 1px 0 blue; 
-    top: 0; 
-    color: white; 
-    overflow: hidden; 
-    animation: noise-anim-2 15s infinite linear alternate-reverse; 
-} 
-canvas{ 
-    position: fixed; 
-    /*margin-top: 380px;*/ 
-    margin-top: -345px; 
-    background-color: #0e0e0e; 
-} 
 
-@keyframes cursor { 
-    0% {opacity: 0;} 
-    40% {opacity: 0;} 
-    50% {opacity: 1;} 
-    90% {opacity: 1;} 
-    100% {opacity: 0;} 
-} 
+.virus {
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 100px;
+    position: relative;
+    user-select: none;
+    -webkit-user-drag: none;
+    width: 137px;
+    height: 175px;
+    top: -220px;
+    filter: brightness(25%);
+}
+@keyframes noise-anim {
+    0% {clip-path: inset(10% 0 50% 0);}
+    5% {clip-path: inset(86% 0 9% 0);}
+    10% {clip-path: inset(94% 0 1% 0);}
+    15% {clip-path: inset(19% 0 61% 0);}
+    20% {clip-path: inset(85% 0 5% 0);}
+    25% {clip-path: inset(23% 0 76% 0);}
+    30% {clip-path: inset(75% 0 24% 0);}
+    35% {clip-path: inset(6% 0 23% 0);}
+    40% {clip-path: inset(91% 0 1% 0);}
+    45% {clip-path: inset(93% 0 2% 0);}
+    50% {clip-path: inset(69% 0 21% 0);}
+    55% {clip-path: inset(91% 0 7% 0);}
+    60% {clip-path: inset(82% 0 14% 0);}
+    65% {clip-path: inset(58% 0 30% 0);}
+    70% {clip-path: inset(80% 0 21% 0);}
+    75% {clip-path: inset(15% 0 74% 0);}
+    80% {clip-path: inset(13% 0 26% 0);}
+    85% {clip-path: inset(15% 0 12% 0);}
+    90% {clip-path: inset(39% 0 42% 0);}
+    95% {clip-path: inset(82% 0 18% 0);}
+    100% {clip-path: inset(38% 0 26% 0);}
+}
+.virus::after {
+    content: url(img/glitch.png);
+    position: absolute;
+    left: 2px;
+    text-shadow: -1px 0 red;
+    top: 0;
+    color: white;
+    overflow: hidden;
+    animation: noise-anim 2s infinite linear alternate-reverse;
+}
+@keyframes noise-anim-2 {
+    0% {clip-path: inset(51% 0 9% 0);}
+    5% {clip-path: inset(22% 0 60% 0);}
+    10% {clip-path: inset(97% 0 2% 0);}
+    15% {clip-path: inset(17% 0 60% 0);}
+    20% {clip-path: inset(15% 0 40% 0);}
+    25% {clip-path: inset(56% 0 10% 0);}
+    30% {clip-path: inset(17% 0 82% 0);}
+    35% {clip-path: inset(39% 0 50% 0);}
+    40% {clip-path: inset(52% 0 39% 0);}
+    45% {clip-path: inset(3% 0 25% 0);}
+    50% {clip-path: inset(87% 0 11% 0);}
+    55% {clip-path: inset(92% 0 2% 0);}
+    60% {clip-path: inset(3% 0 36% 0);}
+    65% {clip-path: inset(48% 0 43% 0);}
+    70% {clip-path: inset(51% 0 33% 0);}
+    75% {clip-path: inset(24% 0 50% 0);}
+    80% {clip-path: inset(38% 0 30% 0);}
+    85% {clip-path: inset(24% 0 45% 0);}
+    90% {clip-path: inset(24% 0 11% 0);}
+    95% {clip-path: inset(100% 0 1% 0);}
+    100% {clip-path: inset(18% 0 77% 0);}
+}
+.virus::before {
+    content: url(images/glitch.png);
+    position: absolute;
+    left: -2px;
+    text-shadow: 1px 0 blue;
+    top: 0;
+    color: white;
+    overflow: hidden;
+    animation: noise-anim-2 15s infinite linear alternate-reverse;
+}
+canvas{
+    position: fixed;
+    /*margin-top: 380px;*/
+    margin-top: -345px;
+    background-color: #0e0e0e;
+}
+
+@keyframes cursor {
+    0% {opacity: 0;}
+    40% {opacity: 0;}
+    50% {opacity: 1;}
+    90% {opacity: 1;}
+    100% {opacity: 0;}
+}
 
 #virus_img img { /*#img_google */
-    display: block; 
-    position: relative; 
-    margin-top: 10px; 
-    user-select: none; 
-    -webkit-user-drag: none; 
-    margin-left: auto; 
-    margin-right: auto; 
-    top: -180px; 
-} 
+    display: block;
+    position: relative;
+    margin-top: 10px;
+    user-select: none;
+    -webkit-user-drag: none;
+    margin-left: auto;
+    margin-right: auto;
+    top: -180px;
+}
 
-*{ 
-    margin: 0; 
-    padding: 0; 
-} 
+*{
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Orbitron';
+    src: url(https://fonts.gstatic.com/s/orbitron/v25/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6BoWgzfDAlp7lk.woff2) format('woff2');
+}
