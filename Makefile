@@ -1,7 +1,7 @@
 CC := gcc
-CFLAGS := -g -Wall -std=c99 -fPIC -D_DEFAULT_SOURCE -lm
-CODE   := 
-C_CODE := 
+CFLAGS := -g -Wall -std=c99 -fPIC -D_DEFAULT_SOURCE -lm -lcurl
+CODE   := src/ical.o
+C_CODE := src/ical.c
 
 
 TESTS := $(wildcard tests/*)
@@ -9,7 +9,7 @@ TESTS := $(subst .c,,$(TESTS))
 TESTS := $(subst tests/,,$(TESTS))
 TESTS := $(filter-out _template,$(TESTS))
 
-all: a.out run
+all: a.out
 
 a.out: $(CODE) src/main.o
 	$(CC) -o $@ $^ $(CFLAGS)

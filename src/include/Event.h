@@ -1,14 +1,19 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__
 
-typedef struct Event{
-    char *summary = NULL;
-    int all_day = 0;
-    char *todo = NULL;
-    int start;
-    int end;
-    char *location = NULL;
-    char *description = NULL;
+typedef struct Event {
+    char *summary;
+    int all_day;
+    char *todo;
+    char* start;
+    char* end;
+
+    char* startDate;
+    char* endDate;
+    char *location;
+    char *description;
+
+    char* icalDay;
 };
 
 
