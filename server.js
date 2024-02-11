@@ -5,9 +5,37 @@ const ical = require('node-ical');
 const cron = require("cron").CronJob;
 const fsPromises = require('fs').promises;
 var events = null;
+var url = "";
 
-new cron("*/30 * * * *", function() {
-events = ical.sync.parseFile('data/cal.ical');
+// Read the manifest.json file
+fs.readFile('secrets.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading secrets.json:', err);
+      return;
+    }
+  
+    try {
+        // Parse the JSON data
+        const manifest = JSON.parse(data);
+  
+        url = manifest.ical;
+  
+        // You can use the version variable here in your server code
+        // For example, you can send it as a response to an HTTP request
+    } catch (error) {
+      console.error('Error parsing secrets.json:', error);
+    }
+  });
+
+const downloadFile = async (url, path) => pipeline(
+    (await fetch(url)).body,
+    createWriteStream(path)
+);
+
+function parseIcal(){
+    downloadFile(url, 'data/cal.ical');
+
+    events = ical.sync.parseFile('data/cal.ical');
 
     for (const event of Object.values(events)) {
         console.log(
@@ -17,6 +45,10 @@ events = ical.sync.parseFile('data/cal.ical');
             '\n'
         );
     };
+}
+
+new cron("*/10 * * * *", function () {
+    parseIcal();
 }, null, true);
 
 const logEvents = require('./logEvents');
@@ -25,7 +57,7 @@ class Emitter extends EventEmitter { };
 // initialize object 
 const myEmitter = new Emitter();
 myEmitter.on('log', (msg, fileName) => logEvents(msg, fileName));
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8000;
 
 const serveFile = async (filePath, contentType, response) => {
     try {
@@ -116,3 +148,4 @@ const server = http.createServer((req, res) => {
     }
 });
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+parseIcal();
