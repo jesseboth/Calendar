@@ -1,4 +1,6 @@
-function dictionary() {
+var dict = null;
+
+function get_dictionary(){
 	fetch('/data')
   .then(response => {
     // Check if the response is successful
@@ -12,11 +14,18 @@ function dictionary() {
   .then(data => {
     // Handle the JSON data
     console.log('Data received:', data);
+		dict = data
 		return data;
   })
   .catch(error => {
     // Handle any errors that occur during the fetch operation
     console.error('Fetch error:', error);
   });
+}
 
+function dictionary() {
+	if (dict == null){
+		get_dictionary();
+	}
+	return dict;
 }

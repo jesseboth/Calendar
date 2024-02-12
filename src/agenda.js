@@ -13,6 +13,8 @@ to_tomorrow = false; /*true if all events are over for the day*/
 current_tomorrow = 0; /*index for tomorrows events*/
 event_key = null;
 all_key = null;
+dict = null;
+dict_try = false;
 
 link_clicked = false;
 function link() {
@@ -61,6 +63,9 @@ function updateTime() {
   document.getElementById("month").style.fontWeight = "100";
 
   if(current == null || (!to_tomorrow && parseInt(time_24) > now["end"])){
+    if(!dict_try){
+      dict = dictionary()
+    }
     get_events(key, time_24);
     listeners()
   }
@@ -130,14 +135,18 @@ function add_zero_24(i) {
 }
 
 function get_events(key, time) {
-  var dict = dictionary();
-  console.log(dict)
+  if(dict == null){
+    return;
+  }
+
   var i = 0;
   var time_int = parseInt(time);
   event_key = key;
+
   if (current === null || time_int > dict[key][current_i]["end"]) {
     while (true) {
       if (
+        dict[key] != null &&
         dict[key] != undefined &&
         dict[key].length > 0 &&
         dict[key].length > i &&
@@ -196,13 +205,13 @@ function format_events() {
   var all_day = false;
   var todo = false;
 
-  dict = dictionary();
+  // dict = dictionary();
   if (!to_next && current_i != -1) {
     current = dict[key][current_i];
     now = current
     all_day = current["all_day"];
     todo = current["todo"];
-    if (current["description"] !== null) {
+    if (current.hasOwnProperty("descitption") &&  current["description"] !== undefined) {
       name = "<span class='dot_cont'><div id='dot_cur' class='dot' ></div></span>" + current["summary"];
     } else {
       name = current["summary"];
@@ -211,13 +220,14 @@ function format_events() {
     start = current["start"];
     end = current["end"];
     location = current["location"];
+
     set_event(all_day, todo, name, start, end, location);
   } else if (to_next) {
     next = dict[key][next_i];
     all_day = next["all_day"];
     todo = next["todo"];
     name = next["summary"];
-    if (next["description"] !== null) {
+    if (next.hasOwnProperty("descitption") && next["description"] !== null) {
       name =
         "<span class='dot_cont'><div id='dot_next' class='dot'></div></span>" + next["summary"];
     } else {
@@ -256,7 +266,7 @@ function set_event(all_day, todo, name, start, end, location) {
     next_color = "#912727"
   }
 
-  if (location === null) {
+  if (location === null || location == undefined) {
     document.getElementById("cal_name").innerHTML = "place_holder";
     document.getElementById("cal_location").innerHTML = name; /*shift down*/
     document.getElementById("start_end").innerHTML = duration;
@@ -288,7 +298,7 @@ function set_event(all_day, todo, name, start, end, location) {
       document.getElementById("dot_next").style.backgroundColor = next_color;
     }
   }
-  if (location === null) {
+  if (location === null || location == undefined) {
     document.getElementById("cal_name").style.color = "#0e0e0e";
     document.getElementById("cal_name").style.opacity = "0";
   }
@@ -296,7 +306,7 @@ function set_event(all_day, todo, name, start, end, location) {
 
 function toggleCal() {
   if (!to_tomorrow && !link_clicked) {
-    dict = dictionary();
+    // dict = dictionary();
     d = new Date();
     s = d.getSeconds();
     if (!to_next && dict[key].length > current_i + 1) {
@@ -351,7 +361,7 @@ function tomorrow_key() {
 }
 function tomorrow_toggle() {
   if (!link_clicked && to_tomorrow) {
-    dict = dictionary();
+    // dict = dictionary();
     if (current_tomorrow + 1 < dict[tomorrow_key()].length) {
       current_tomorrow += 1;
     } else {
@@ -363,8 +373,8 @@ function tomorrow_toggle() {
   }
 }
 function set_tomorrow(key) {
-  var dict = dictionary();
-  if (dict[key] != undefined && dict[key].length > 0) {
+  // var dict = dictionary();
+  if (dict != null && dict[key] != undefined && dict[key].length > 0) {
     document.getElementById("cal_name").style.color = "#383838";
     document.getElementById("cal_name").style.opacity = "1";
     document.getElementById("cal_location").style.color = "#383838";
@@ -375,7 +385,7 @@ function set_tomorrow(key) {
     var all_day = dict[key][current_tomorrow]["all_day"];
     var todo = dict[key][current_tomorrow]["todo"];
     var name = "";
-    if (dict[key][current_tomorrow]["description"] !== null) {
+    if ( dict[key][current_tomorrow].hasOwnProperty("descitption") && dict[key][current_tomorrow]["description"] !== null) {
       name =
         "<span class='dot_cont'><div id='dot_cur' class='dot'></div></span>" + dict[key][current_tomorrow]["summary"];
     } else {
@@ -417,11 +427,11 @@ function getRandomInt(max) {
 }
 
 function set_all_day() {
-  dict = dictionary();
+  // dict = dictionary();
   if (_all_day !== 0 && dict[key].length != 0) {
     let summary = "";
     all_key = key;
-    if (dict[key][all_day_current]["description"] !== null) {
+    if (dict[key][all_day_current].hasOwnProperty("descitption") && dict[key][all_day_current]["description"] !== null) {
       summary =
         "<span class='dot_cont'><div id='all_dot' class='dot'></div></span>" + dict[key][all_day_current]["summary"];
     } else {
@@ -454,7 +464,7 @@ function set_all_day() {
         document.getElementById("all_dot").style.backgroundColor = "#383838";
       }
     }
-    if (dict[key][all_day_current]["location"] !== null) {
+    if (dict[key][all_day_current].hasOwnProperty("location") && dict[key][all_day_current]["location"] !== null) {
       document.getElementById("loc").innerHTML =
         dict[key][all_day_current]["location"];
       if (dict[key][all_day_current]["todo"] == "TODO") {
@@ -504,7 +514,7 @@ function to_pointer() {
 
 function show_description(i, all) {
   link()
-  var dict = dictionary();
+  // var dict = dictionary();
   if (!all) {
     var text =
       "<b>" +

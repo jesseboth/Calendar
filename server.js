@@ -55,11 +55,11 @@ if(url != ""){
         jsonEvent = {
             "summary": "",
             "allday":false,
-            "date": "",
             "start": 0,
             "end": 0,
             "location": "",
-            "description":"",
+            "description": undefined,
+            "date": ""
         }
 
         jsonEvent["summary"] = event.summary;
@@ -69,9 +69,12 @@ if(url != ""){
         jsonEvent["location"] = event.location;
         if(event.description != undefined){
             jsonEvent["description"] = String(event.description).trimStart();
+            if(jsonEvent["description"] == ""){
+                jsonEvent["description" = undefined];
+            }
         }
         else{
-            jsonEvent["description"] = event.description;
+            jsonEvent["description"] = undefined;
         }
 
         if(jsonEvent["start"] == 0 && jsonEvent["end"] == 0){
