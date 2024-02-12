@@ -131,6 +131,7 @@ function add_zero_24(i) {
 
 function get_events(key, time) {
   var dict = dictionary();
+  console.log(dict)
   var i = 0;
   var time_int = parseInt(time);
   event_key = key;

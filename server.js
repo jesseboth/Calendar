@@ -39,10 +39,12 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
 async function parseIcal(){
     // events = ical.sync.parseFile('data/cal.ical');
 if(jsonEventsi == 1){
+    jsonEvents1 = {};
     jsonEvents = jsonEvents1;
     jsonEventsi = 0;
 }
 else {
+    jsonEvents2 = {}
     jsonEvents = jsonEvents2;
     jsonEventsi = 1;
 }
@@ -80,7 +82,7 @@ if(url != ""){
             addEventToDate(jsonEvent["date"], jsonEvent);
         }
     };
-    toServe = json.stringify(jsonEvents)
+    toServe = jsonEvents
 }
 }
 
@@ -121,12 +123,19 @@ const serveFile = async (filePath, contentType, response) => {
 }
 
 const server = http.createServer((req, res) => {
-    console.log(req.url, req.method);
+    // console.log(req.url, req.method);
     myEmitter.emit('log', `${req.url}\t${req.method}`, 'reqLog.txt');
 
     const extension = path.extname(req.url);
 
     let contentType;
+
+    if (req.url === '/data' && req.method === 'GET') {
+        const jsonData = JSON.stringify(jsonEvents); // Your JSON data
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(jsonData);
+        return;
+    }
 
     switch (extension) {
         case '.css':
@@ -186,7 +195,6 @@ const server = http.createServer((req, res) => {
     }
 });
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
 
 function formatDate(inputDate) {
     const dateObj = new Date(inputDate);
