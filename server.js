@@ -1,10 +1,10 @@
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
-const { pipeline } = require('stream');
 const cron = require("cron").CronJob;
 const ical = require("node-ical");
 const fsPromises = require('fs').promises;
+const timezone = require('timezones-ical-library');
 
 var jsonEvents1 = {};
 var jsonEvents2 = {};
@@ -15,6 +15,7 @@ var jsonEvents = jsonEvents1
 var toServe;
 
 var url = "";
+var timeZone = "";
 
 // Read the manifest.json file
 fs.readFile('secrets.json', 'utf8', (err, data) => {
@@ -28,6 +29,7 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
         const secrets = JSON.parse(data);
   
         url = secrets.ical;
+        timeZone = secrets.timezone;
         parseIcal();
         // You can use the version variable here in your server code
         // For example, you can send it as a response to an HTTP request
@@ -62,6 +64,7 @@ if(url != ""){
             "date": ""
         }
 
+        
         jsonEvent["summary"] = event.summary;
         [jsonEvent["date"], jsonEvent["start"]] = formatDate(event.start);
         jsonEvent["start"] = parseInt(jsonEvent["start"]);
@@ -70,7 +73,7 @@ if(url != ""){
         if(event.description != undefined){
             jsonEvent["description"] = String(event.description).trimStart();
             if(jsonEvent["description"] == ""){
-                jsonEvent["description" = undefined];
+                jsonEvent["description"] = undefined;
             }
         }
         else{
@@ -200,6 +203,11 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 function formatDate(inputDate) {
+
+    if(inputDate == undefined){
+        return [0, 0]
+    }
+    
     const dateObj = new Date(inputDate);
     const month = dateObj.getMonth() + 1; // Month is zero-based, so we add 1
     const day = dateObj.getDate();
@@ -215,8 +223,19 @@ function formatDate(inputDate) {
     const formattedDay = day < 10 ? '0' + day : day;
     const formattedTime = time < 1000 ? '0' + time : time;
 
+    const formattedHours = hours < 10 ? '0' + hours : hours;
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+    const zone = inputDate.tz == "Etc/UTC" ? timeZone : inputDate.tz;
+    
+    var offset = 0;
+    if(inputDate.tz != undefined){
+        // test = timezone.tzlib_get_offset('Europe/Berlin', '2023-05-23', '15:45')
+        offset = timezone.tzlib_get_offset(zone, `${year}-${formattedMonth}-${formattedDay}`, `${formattedHours}:${formattedMinutes}`)
+    }
+
     // Return the formatted date string in the format MM/DD/YYYY and the time as an integer
-    return [`${formattedMonth}/${formattedDay}/${year}`, `${formattedTime}`];
+    return [`${formattedMonth}/${formattedDay}/${year}`, `${formattedTime + parseInt(offset)}`];
 }
 
 // Function to add an event to a specific date
