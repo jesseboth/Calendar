@@ -1,10 +1,19 @@
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
-const ical = require('node-ical');
+const { pipeline } = require('stream');
 const cron = require("cron").CronJob;
+const ical = require("node-ical");
 const fsPromises = require('fs').promises;
-var events = null;
+
+var jsonEvents1 = {};
+var jsonEvents2 = {};
+
+var jsonEventsi = 1;
+var jsonEvents = jsonEvents1
+
+var toServe;
+
 var url = "";
 
 // Read the manifest.json file
@@ -16,35 +25,63 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
   
     try {
         // Parse the JSON data
-        const manifest = JSON.parse(data);
+        const secrets = JSON.parse(data);
   
-        url = manifest.ical;
-  
+        url = secrets.ical;
+        parseIcal();
         // You can use the version variable here in your server code
         // For example, you can send it as a response to an HTTP request
     } catch (error) {
       console.error('Error parsing secrets.json:', error);
     }
-  });
+});
 
-const downloadFile = async (url, path) => pipeline(
-    (await fetch(url)).body,
-    createWriteStream(path)
-);
-
-function parseIcal(){
-    downloadFile(url, 'data/cal.ical');
-
-    events = ical.sync.parseFile('data/cal.ical');
-
+async function parseIcal(){
+    // events = ical.sync.parseFile('data/cal.ical');
+if(jsonEventsi == 1){
+    jsonEvents = jsonEvents1;
+    jsonEventsi = 0;
+}
+else {
+    jsonEvents = jsonEvents2;
+    jsonEventsi = 1;
+}
+if(url != ""){
+    events = await ical.async.fromURL(url);
     for (const event of Object.values(events)) {
-        console.log(
-            'Summary: ' + event.summary +
-            '\nDescription: ' + event.description +
-            // '\nStart Date: ' + event.start.toISOString() +
-            '\n'
-        );
+
+        jsonEvent = {
+            "summary": "",
+            "allday":false,
+            "date": "",
+            "start": 0,
+            "end": 0,
+            "location": "",
+            "description":"",
+        }
+
+        jsonEvent["summary"] = event.summary;
+        [jsonEvent["date"], jsonEvent["start"]] = formatDate(event.start);
+        jsonEvent["start"] = parseInt(jsonEvent["start"]);
+        jsonEvent["end"] = parseInt(formatDate(event.end)[1]);
+        jsonEvent["location"] = event.location;
+        if(event.description != undefined){
+            jsonEvent["description"] = String(event.description).trimStart();
+        }
+        else{
+            jsonEvent["description"] = event.description;
+        }
+
+        if(jsonEvent["start"] == 0 && jsonEvent["end"] == 0){
+            jsonEvent["allday"] = true;
+        }
+
+        if(event.summary != undefined){
+            addEventToDate(jsonEvent["date"], jsonEvent);
+        }
     };
+    toServe = json.stringify(jsonEvents)
+}
 }
 
 new cron("*/10 * * * *", function () {
@@ -53,6 +90,7 @@ new cron("*/10 * * * *", function () {
 
 const logEvents = require('./logEvents');
 const EventEmitter = require('events');
+const { formatDistanceToNow } = require('date-fns');
 class Emitter extends EventEmitter { };
 // initialize object 
 const myEmitter = new Emitter();
@@ -148,4 +186,36 @@ const server = http.createServer((req, res) => {
     }
 });
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-parseIcal();
+
+
+function formatDate(inputDate) {
+    const dateObj = new Date(inputDate);
+    const month = dateObj.getMonth() + 1; // Month is zero-based, so we add 1
+    const day = dateObj.getDate();
+    const year = dateObj.getFullYear();
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    
+    // Format the time as an integer in the format HHMM
+    const time = hours * 100 + minutes;
+    
+    // Pad single digit month, day, and minutes with leading zeros
+    const formattedMonth = month < 10 ? '0' + month : month;
+    const formattedDay = day < 10 ? '0' + day : day;
+    const formattedTime = time < 1000 ? '0' + time : time;
+
+    // Return the formatted date string in the format MM/DD/YYYY and the time as an integer
+    return [`${formattedMonth}/${formattedDay}/${year}`, `${formattedTime}`];
+}
+
+// Function to add an event to a specific date
+function addEventToDate(date, event) {
+    // Check if the date already exists in the eventsByDate object
+    if (!jsonEvents[date]) {
+        // If the date doesn't exist, initialize an empty array for it
+        jsonEvents[date] = [];
+    }
+
+    // Add the event to the array corresponding to the date
+    jsonEvents[date].push(event);
+}
