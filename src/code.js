@@ -189,19 +189,21 @@ function start_color() {
   document.getElementById("month").style.color = color;
 }
 
-profiles = ["img/profile.png", "img/ub.png", "img/anon.png"];
+profiles = ["img/biamp.png", "img/profile.png", "img/anon.png"];
 profile_info = {
+  "img/biamp.png":
+    "<img id='img_main' src='img/biamp.png' width='36' height='36'/>",
   "img/profile.png":
-    "<img id='img_main' src='img/profile.png' width='36' height='36'/>",
-  "img/ub.png":
-    "<img id='img_user1' src='img/ub.png' width='36' height='36'/>",
+    "<img id='img_user1' src='img/profile.png' width='36' height='36'/>",
   "img/anon.png":
-    "<img id='img_user2' src='img/anon.png' width='36' height='36'/>",
+      "<img id='img_user2' src='img/anon.png' width='36' height='36'/>",
+  // "img/ub.png":
+  //   "<img id='img_userx' src='img/ub.png' width='36' height='36'/>",
 };
 function main_tab() {
   document.getElementById("google").classList.remove("virus");
   color = "#0f99e3";
-  img = "img/google.png";
+  img = "img/biamp_logo.png";
   height = "100px";
   width = "300px";
   email = "img/gmail.png";
@@ -209,7 +211,7 @@ function main_tab() {
   drive_link = "https://drive.google.com/drive/u/1/"
   cal_link = "https://calendar.google.com/calendar/u/1/r/week"
   icon_drawer = "img/app_drawer.png";
-  profile = "img/profile.png";
+  profile = "img/biamp.png";
   _top = "-470px";
   _left = "0px";
   app_top = "-86px";
@@ -234,22 +236,22 @@ function main_tab() {
 
 function first_tab() {
   document.getElementById("google").classList.remove("virus");
-  color = "#015bbc";
-  img = "img/ub_logo.png";
-  height = "120px";
-  width = "250px";
-  email = "img/gmail_1.png";
+  color = "#0f99ed";
+  img = "img/google.png";
+  height = "100px";
+  width = "300px";
+  email = "img/gmail.png";
   email_link = "https://mail.google.com/mail/u/1/#inbox";
   drive_link = "https://drive.google.com/drive/u/1/"
   cal_link = "https://calendar.google.com/calendar/u/1/r/week"
-  icon_drawer = "img/app_drawer_UB.png";
-  profile = "img/ub.png";
-  _top = "-490px";
+  icon_drawer = "img/app_drawer.png";
+  profile = "img/profile.png";
+  _top = "-470px";
   _left = "0px";
   app_top = "-86px";
   mail_top = "-44px";
   l = "0";
-  all_day = "-490px";
+  all_day = "-470px";
   all_day_left = "20px";
   drawthing(false);
   set_tab(color, img, height, width, profile, email, email_link, drive_link, cal_link, icon_drawer, all_day); 
@@ -262,8 +264,41 @@ function first_tab() {
       })
     })
   flip_apps("app_select_2", "app_select_1")
-  history.replaceState({"user": "ub"},'');
+  history.replaceState({"user": "profile"},'');
 }
+
+// function first_tab() {
+//   document.getElementById("google").classList.remove("virus");
+//   color = "#015bbc";
+//   img = "img/ub_logo.png";
+//   height = "120px";
+//   width = "250px";
+//   email = "img/gmail_1.png";
+//   email_link = "https://mail.google.com/mail/u/1/#inbox";
+//   drive_link = "https://drive.google.com/drive/u/1/"
+//   cal_link = "https://calendar.google.com/calendar/u/1/r/week"
+//   icon_drawer = "img/app_drawer_UB.png";
+//   profile = "img/ub.png";
+//   _top = "-490px";
+//   _left = "0px";
+//   app_top = "-86px";
+//   mail_top = "-44px";
+//   l = "0";
+//   all_day = "-490px";
+//   all_day_left = "20px";
+//   drawthing(false);
+//   set_tab(color, img, height, width, profile, email, email_link, drive_link, cal_link, icon_drawer, all_day); 
+//   document.getElementById("img_main").addEventListener("click", main_tab);
+//   document.getElementById("img_user2").addEventListener("click", second_tab);
+//   document.getElementById("apps").addEventListener("click", appToggle);
+//   document.querySelectorAll('.app').forEach(item => {
+//       item.addEventListener('click', event => {
+//         app_clicked_on()
+//       })
+//     })
+//   flip_apps("app_select_2", "app_select_1")
+//   history.replaceState({"user": "ub"},'');
+// }
 
 function second_tab() {
   document.getElementById("google").classList.add("virus");
@@ -432,6 +467,9 @@ function drawthing(check) {
 function get_user(){
   if(history.state != null){
     if(history.state["user"] == "ub"){
+      first_tab()
+    }
+    else if(history.state["user"] == "profile"){
       first_tab()
     }
     else if(history.state["user"] == "anon"){
