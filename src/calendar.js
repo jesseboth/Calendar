@@ -31,6 +31,8 @@ let set_year = null
 let set_month = null
 let set_day = null
 
+let set_dict = false;
+
 function updateTime() {
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -55,8 +57,17 @@ function updateTime() {
 		clicked_key = current_key
 	}
 
+    if(!set_dict){
+        dict = dictionary();
+        return;
+    }
+    else if(dict == null){
+        return;
+    }
+
     /*set calendar dates*/
     if (!offset_check) {
+        leap_year(year)
         current_key = get_key(month_num + 1, day, year)
         today = current_key
         event_key = current_key
@@ -68,7 +79,6 @@ function updateTime() {
         show_day(get_key(month_num + 1, day, year), time_24)
         set_current_event(current_key, time_24)
         clicked_key = current_key
-        leap_year(year)
     }
     
     set_current_event(clicked_key, time_24)
@@ -182,7 +192,7 @@ function get_key(month, day, year) {
 
 function set_cal_dates(offset, month, year) {
 
-    dict = dictionary()
+    // dict = dictionary()
 
     const datetime = new Date()
     let k_month = datetime.getMonth()
@@ -211,7 +221,7 @@ function set_cal_dates(offset, month, year) {
             long_cal(offset, month_lengths[month], month + 1, year)
         } else {
             restore_cal()
-            set_events(month + 1, i, year, off)
+            // set_events(month + 1, i, year, off)
         }
         off++
     }
@@ -237,13 +247,16 @@ function long_cal(offset, month_length, month, year) {
     let day = 1
     let key = ""
     let cur = 1
-    const dict = dictionary()
+    // const dict = dictionary()
 
     const w = weather
+    if(w == null){
+        return;
+    }
     while (start <= 7) {
         key = get_key(month, day, year)
 
-        if (dict[key] !== undefined && dict[key].length !== 0) {
+        if (dict.hasOwnProperty(key) && dict[key] !== undefined && dict[key].length !== 0) {
             document.getElementById(start.toString()).innerText = day.toString()
             set_mini_weather(start, key)
             adjust_weather_css(start, key)
@@ -421,7 +434,7 @@ function set_events(month, day, year, off) {
     
     set_mini_weather(off, key)
 
-    for (let j = 0; dict[key] !== undefined && j < dict[key].length; j++) {
+    for (let j = 0; dict.hasOwnProperty(key) && dict[key] !== undefined && j < dict[key].length; j++) {
         if (j > num_events) {
             if (!overflow) {
                 overflow = true
@@ -498,13 +511,13 @@ function reset() {
 function show_day(key) {
     clicked_day = true
     event_key = key
-    let dict = dictionary()
+    // let dict = dictionary()
     let summary;
     let location;
     let duration;
     let del = 0
     document.getElementById("today").innerHTML = ""
-    for (let i = 0; dict[key] !== undefined && i < dict[key].length; i++) {
+    for (let i = 0; dict != null && dict.hasOwnProperty(key) && dict[key] !== undefined && i < dict[key].length; i++) {
         let current = dict[key][i]
         location = "-"
         if (current["all_day"]) {
@@ -610,7 +623,7 @@ function set_current_event(key, time_24) {
     const quiz_color = "#EEF72B"
 
     const time = parseInt(time_24)
-    const dict = dictionary()
+    // const dict = dictionary()
     const list = dict[key]
 
     let cur = []
@@ -795,6 +808,9 @@ function minus_fifteen(input) {
 
 function set_weather(key) {
         let w = weather()
+        if(w == null){
+            return;
+        }
         if (w[key] !== undefined && w[key] !== undefined) {
 
             document.getElementsByClassName("weather")[0].innerHTML =
@@ -807,6 +823,9 @@ function set_weather(key) {
 
 function set_mini_weather(off, key) {
         const w = weather()
+        if(w == null){
+            return;
+        }
         let id = "weather_" + off.toString()
             // y = yesterday()
 
@@ -963,7 +982,7 @@ function yesterday(){
     return add_zero(y.getMonth()+1) +"/" + add_zero(y.getDate()) +"/" + y.getFullYear()
 }
 function show_description(i){
-    var dict = dictionary()
+    // var dict = dictionary()
     var text = "<b>" +dict[event_key][i]["summary"] +"</b>"+ "<br> <br>" + dict[event_key][i]["description"]
 
     document.getElementById("description").innerHTML = text

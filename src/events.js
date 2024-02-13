@@ -29,3 +29,7 @@ function dictionary() {
 	}
 	return dict;
 }
+
+function weather(){
+  return null
+}
