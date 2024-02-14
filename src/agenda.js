@@ -77,7 +77,7 @@ function get_12_hour(hour, minutes, check) {
   var am_pm = "";
   if (parseInt(hour) > 12) {
     if (parseInt(hour) === 24) {
-      new_hour = parse(hour) - 12;
+      new_hour = parseInt(hour) - 12;
       am_pm = " AM";
     } else {
       new_hour = parseInt(hour) - 12;
@@ -159,7 +159,7 @@ function get_events(key, time) {
           rand = true;
           all_day_current = getRandomInt(_all_day);
         }
-        //set_all_day()
+        set_all_day()
         if (_all_day > 1) {
           to_pointer();
         }
@@ -385,7 +385,7 @@ function set_tomorrow(key) {
     var all_day = dict[key][current_tomorrow]["all_day"];
     var todo = dict[key][current_tomorrow]["todo"];
     var name = "";
-    if ( dict[key][current_tomorrow].hasOwnProperty("descitption") && dict[key][current_tomorrow]["description"] !== null) {
+    if ( dict[key][current_tomorrow].hasOwnProperty("description") && dict[key][current_tomorrow]["description"] !== null) {
       name =
         "<span class='dot_cont'><div id='dot_cur' class='dot'></div></span>" + dict[key][current_tomorrow]["summary"];
     } else {
@@ -431,7 +431,7 @@ function set_all_day() {
   if (_all_day !== 0 && dict[key].length != 0) {
     let summary = "";
     all_key = key;
-    if (dict[key][all_day_current].hasOwnProperty("descitption") && dict[key][all_day_current]["description"] !== null) {
+    if (dict[key][all_day_current].hasOwnProperty("description") && dict[key][all_day_current]["description"] !== null) {
       summary =
         "<span class='dot_cont'><div id='all_dot' class='dot'></div></span>" + dict[key][all_day_current]["summary"];
     } else {
