@@ -16,6 +16,7 @@ var toServe;
 
 var url = "";
 var timeZone = "";
+timezones = {};
 
 // Read the manifest.json file
 fs.readFile('secrets.json', 'utf8', (err, data) => {
@@ -30,6 +31,7 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
   
         url = secrets.ical;
         timeZone = secrets.timezone;
+        timezones = secrets.timezones;
         parseIcal();
         // You can use the version variable here in your server code
         // For example, you can send it as a response to an HTTP request
@@ -40,56 +42,47 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
 
 async function parseIcal(){
     // events = ical.sync.parseFile('data/cal.ical');
-if(jsonEventsi == 1){
-    jsonEvents1 = {};
-    jsonEvents = jsonEvents1;
-    jsonEventsi = 0;
-}
-else {
-    jsonEvents2 = {}
-    jsonEvents = jsonEvents2;
-    jsonEventsi = 1;
-}
-if(url != ""){
-    events = await ical.async.fromURL(url);
-    for (const event of Object.values(events)) {
+    if(jsonEventsi == 1){
+        jsonEvents1 = {};
+        jsonEvents = jsonEvents1;
+        jsonEventsi = 0;
+    }
+    else {
+        jsonEvents2 = {}
+        jsonEvents = jsonEvents2;
+        jsonEventsi = 1;
+    }
+    today = new Date()
+    year_start = today.getFullYear();
+    year_end =  today.getFullYear();
+    month_start = today.getMonth() - 5;
+    month_end = today.getMonth() + 5;
 
-        jsonEvent = {
-            "summary": "",
-            "allday":false,
-            "start": 0,
-            "end": 0,
-            "location": "",
-            "description": undefined,
-            "date": ""
-        }
+    if( month_start < 0){
+        month_start+=12;
+        year_start -=1;
+    }
+    else if(mont_end > 11){
+        month_end -= 12;
+        year_start += 1;
+    }
 
-        
-        jsonEvent["summary"] = event.summary;
-        [jsonEvent["date"], jsonEvent["start"]] = formatDate(event.start);
-        jsonEvent["start"] = parseInt(jsonEvent["start"]);
-        jsonEvent["end"] = parseInt(formatDate(event.end)[1]);
-        jsonEvent["location"] = event.location;
-        if(event.description != undefined){
-            jsonEvent["description"] = String(event.description).trimStart();
-            if(jsonEvent["description"] == ""){
-                jsonEvent["description"] = undefined;
+    if(url != ""){
+        events = await ical.async.fromURL(url);
+        for (const event of Object.values(events)) {
+
+            if(event.rrule){
+                const dates = event.rrule.between(new Date(year_start, month_start, 0, 0, 0, 0, 0), new Date(year_end, month_end, 31, 0, 0, 0, 0))
+                for(i = 0; i < dates.length; i++){
+                    parseEvent(event, dates[i])
+                }
             }
-        }
-        else{
-            jsonEvent["description"] = undefined;
-        }
-
-        if(jsonEvent["start"] == 0 && jsonEvent["end"] == 0){
-            jsonEvent["allday"] = true;
-        }
-
-        if(event.summary != undefined){
-            addEventToDate(jsonEvent["date"], jsonEvent);
-        }
-    };
-    toServe = jsonEvents
-}
+            else {
+                parseEvent(event, event.start);
+            }
+        };
+        toServe = jsonEvents
+    }
 }
 
 new cron("*/10 * * * *", function () {
@@ -202,18 +195,67 @@ const server = http.createServer((req, res) => {
 });
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
+function parseEvent(event, rawDate){
+    if(valiDate(rawDate)){
+        jsonEvent = {
+            "summary": "",
+            "all_day":false,
+            "start": 0,
+            "end": 0,
+            "location": "",
+            "description": undefined,
+            "date": ""
+        }
+        jsonEvent["summary"] = event.summary;
+        jsonEvent["date"] = formatDate(rawDate)[0];
+        if(jsonEvent["date"] == 0){
+            return;
+        }
+        jsonEvent["start"] = formatDate(event.start)[1];
+        jsonEvent["start"] = parseInt(jsonEvent["start"]);
+        jsonEvent["end"] = parseInt(formatDate(event.end)[1]);
+        jsonEvent["location"] = event.location;
+        if(event.description != undefined){
+            jsonEvent["description"] = String(event.description).trimStart();
+            if(jsonEvent["description"] == ""){
+                jsonEvent["description"] = undefined;
+            }
+        }
+        else{
+            jsonEvent["description"] = undefined;
+        }
+
+        if(jsonEvent["start"] == jsonEvent["end"]){
+            jsonEvent["start"] = '-1'
+            jsonEvent["end"] = '-1'
+            jsonEvent["all_day"] = true;
+        }
+
+        if(event.summary != undefined){
+            console.log(jsonEvent, event.start, event.end);
+            addEventToDate(jsonEvent["date"], jsonEvent);
+        }
+    }
+}
+
 function formatDate(inputDate) {
+
+    //FIXME:
+    if(inputDate.tz != undefined && inputDate.tz != timeZone && timezones[inputDate.tz] != timeZone){
+        console.log(inputDate, inputDate.tz)
+        return [0,0]
+    }
 
     if(inputDate == undefined){
         return [0, 0]
     }
     
     const dateObj = new Date(inputDate);
-    const month = dateObj.getMonth() + 1; // Month is zero-based, so we add 1
-    const day = dateObj.getDate();
-    const year = dateObj.getFullYear();
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes();
+    const month = dateObj.getUTCMonth() + 1; // Month is zero-based, so we add 1
+    const day = dateObj.getUTCDate();
+    const year = dateObj.getUTCFullYear();
+    const hours = dateObj.getUTCHours();
+    const minutes = dateObj.getUTCMinutes();
     
     // Format the time as an integer in the format HHMM
     const time = hours * 100 + minutes;
@@ -226,16 +268,22 @@ function formatDate(inputDate) {
     const formattedHours = hours < 10 ? '0' + hours : hours;
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
 
-    const zone = inputDate.tz == "Etc/UTC" ? timeZone : inputDate.tz;
-    
+
+
+    var zone = inputDate.tz == "Etc/UTC" || inputDate.tz == undefined ? timeZone : inputDate.tz;
+    if(timezones.hasOwnProperty(zone)){
+        zone = timeZone;
+    }
+
     var offset = 0;
     if(inputDate.tz != undefined){
-        // test = timezone.tzlib_get_offset('Europe/Berlin', '2023-05-23', '15:45')
-        offset = timezone.tzlib_get_offset(zone, `${year}-${formattedMonth}-${formattedDay}`, `${formattedHours}:${formattedMinutes}`)
+        offset = parseInt(timezone.tzlib_get_offset(zone, `${year}-${formattedMonth}-${formattedDay}`, `${formattedHours}:${formattedMinutes}`))
     }
 
     // Return the formatted date string in the format MM/DD/YYYY and the time as an integer
-    return [`${formattedMonth}/${formattedDay}/${year}`, `${formattedTime + parseInt(offset)}`];
+    final_time = time + offset > 0 ?  time+offset : time + offset + 2400;
+
+    return [`${formattedMonth}/${formattedDay}/${year}`, `${final_time}`];
 }
 
 // Function to add an event to a specific date
@@ -246,6 +294,32 @@ function addEventToDate(date, event) {
         jsonEvents[date] = [];
     }
 
+    let insertIndex = jsonEvents[date].findIndex(item => item["start"] > event["start"]);
+
+    // If the insertIndex is -1, it means the new item should be inserted at the end
+    if (insertIndex === -1) {
+        jsonEvents[date].push(event);
+    } else {
+    // Insert the new item at the found index
+        jsonEvents[date].splice(insertIndex, 0, event);
+    }
+
     // Add the event to the array corresponding to the date
-    jsonEvents[date].push(event);
+    // jsonEvents[date].push(event);
+}
+
+function valiDate(inputDate){
+    if(inputDate == undefined){
+        return false;
+    }
+
+    const dateObj = new Date(inputDate);
+    const todayDateObj = new Date();
+    
+    // Get the difference in months between the input date and today's date
+    const diffMonths = (dateObj.getFullYear() - todayDateObj.getFullYear()) * 12 +
+                       (dateObj.getMonth() - todayDateObj.getMonth());
+
+    // Check if the difference is between -5 and 5 (inclusive) months
+    return Math.abs(diffMonths) <= 5;
 }
