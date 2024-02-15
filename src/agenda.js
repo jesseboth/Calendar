@@ -40,7 +40,8 @@ function updateTime() {
   var year = datetime.getFullYear();
   var day_of_week = week[datetime.getDay()];
   var date = day_of_week + ", " + month + " " + day;
-  key = add_zero(month_num + 1) + "/" + add_zero(day) + "/" + year.toString();
+  // key = add_zero(month_num + 1) + "/" + add_zero(day) + "/" + year.toString();
+  key = datetime.toLocaleDateString().slice(0, 10)
   var seconds = datetime.getSeconds();
 
   /*gives a 10 second delay*/
@@ -354,10 +355,7 @@ function tomorrow_key() {
   tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  tomorrow_month = add_zero((tomorrow.getMonth() + 1).toString());
-  tomorrow_day = add_zero(tomorrow.getDate().toString());
-  tomorrow_year = tomorrow.getFullYear().toString();
-  return tomorrow_month + "/" + tomorrow_day + "/" + tomorrow_year;
+  return tomorrow.toLocaleDateString().slice(0, 10);
 }
 function tomorrow_toggle() {
   if (!link_clicked && to_tomorrow) {

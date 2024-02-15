@@ -92,6 +92,7 @@ new cron("*/10 * * * *", function () {
 const logEvents = require('./logEvents');
 const EventEmitter = require('events');
 const { formatDistanceToNow } = require('date-fns');
+const { json } = require('express');
 class Emitter extends EventEmitter { };
 // initialize object 
 const myEmitter = new Emitter();
@@ -200,20 +201,36 @@ function parseEvent(event, rawDate){
         jsonEvent = {
             "summary": "",
             "all_day":false,
-            "start": 0,
-            "end": 0,
+            "start": null,
+            "end": null,
             "location": "",
             "description": undefined,
             "date": ""
         }
+        tzid = undefined;
+        if(event.start != undefined && event.start.hasOwnProperty("tz")){
+            if(timezones.hasOwnProperty(event.start.tz)){
+                tzid = timezones[event.start.tz]
+            }
+            else{
+                tzid = event.start.tz
+            }
+        } else{
+            jsonEvent["all_day"] = true;
+        }
+
         jsonEvent["summary"] = event.summary;
-        jsonEvent["date"] = formatDate(rawDate)[0];
+        jsonEvent["date"] = formatDate(rawDate, tzid)[0];
         if(jsonEvent["date"] == 0){
             return;
         }
-        jsonEvent["start"] = formatDate(event.start)[1];
-        jsonEvent["start"] = parseInt(jsonEvent["start"]);
-        jsonEvent["end"] = parseInt(formatDate(event.end)[1]);
+
+        if(!json.all_day){
+            jsonEvent["start"] = formatDate(event.start, tzid)[1];
+            jsonEvent["start"] = parseInt(jsonEvent["start"]);
+            jsonEvent["end"] = parseInt(formatDate(event.end, tzid)[1]);
+        }
+
         jsonEvent["location"] = event.location;
         if(event.description != undefined){
             jsonEvent["description"] = String(event.description).trimStart();
@@ -225,35 +242,46 @@ function parseEvent(event, rawDate){
             jsonEvent["description"] = undefined;
         }
 
-        if(jsonEvent["start"] == jsonEvent["end"]){
-            jsonEvent["start"] = '-1'
-            jsonEvent["end"] = '-1'
-            jsonEvent["all_day"] = true;
-        }
-
         if(event.summary != undefined){
-            console.log(jsonEvent, event.start, event.end);
+            console.log(jsonEvent)
             addEventToDate(jsonEvent["date"], jsonEvent);
         }
     }
 }
 
-function formatDate(inputDate) {
+function parseTimezone(tzData, years, months) {
+    tzStore = {
+        "start": "", 
+        "end": "",
+    };
 
-    //FIXME:
-    if(inputDate.tz != undefined && inputDate.tz != timeZone && timezones[inputDate.tz] != timeZone){
-        console.log(inputDate, inputDate.tz)
-        return [0,0]
+    for (const randomString in tzData) {
+        if(tzData[randomString].hasOwnProperty("datetype")){
+            const date_time = tzData[randomString]
+            console.log("here " + date_time.rrule)
+            console.log(tzData)
+            if(date_time.rrule != undefined){
+                // const dates = date_time.rrule.between(new Date(years[0, months[0], 0, 0, 0, 0, 0), new Date(years[1], months[1], 31, 0, 0, 0, 0));
+            }
+        }
     }
+
+}
+
+function formatDate(inputDate, tzid) {
+
+   //FIXME:
+    // if(inputDate.tz != undefined && inputDate.tz != timeZone && timezones[inputDate.tz] != timeZone){
+    //     return [0,0]
+    // }
 
     if(inputDate == undefined){
         return [0, 0]
     }
     
     const dateObj = new Date(inputDate);
-    const month = dateObj.getUTCMonth() + 1; // Month is zero-based, so we add 1
-    const day = dateObj.getUTCDate();
-    const year = dateObj.getUTCFullYear();
+    var date = dateObj.toLocaleDateString().slice(0, 10);
+    const dateISO = dateObj.toISOString().slice(0, 10);
     const hours = dateObj.getUTCHours();
     const minutes = dateObj.getUTCMinutes();
     
@@ -261,29 +289,39 @@ function formatDate(inputDate) {
     const time = hours * 100 + minutes;
     
     // Pad single digit month, day, and minutes with leading zeros
-    const formattedMonth = month < 10 ? '0' + month : month;
-    const formattedDay = day < 10 ? '0' + day : day;
+    // const formattedMonth = month < 10 ? '0' + month : month;
+    // const formattedDay = day < 10 ? '0' + day : day;
     const formattedTime = time < 1000 ? '0' + time : time;
 
     const formattedHours = hours < 10 ? '0' + hours : hours;
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
 
-
-
-    var zone = inputDate.tz == "Etc/UTC" || inputDate.tz == undefined ? timeZone : inputDate.tz;
-    if(timezones.hasOwnProperty(zone)){
-        zone = timeZone;
-    }
-
+    
+    // console.log("here timezone " + inputDate.tz);
+    
     var offset = 0;
-    if(inputDate.tz != undefined){
-        offset = parseInt(timezone.tzlib_get_offset(zone, `${year}-${formattedMonth}-${formattedDay}`, `${formattedHours}:${formattedMinutes}`))
+    if(tzid != undefined){
+        const zone = tzid == "Etc/UTC" ? timeZone : tzid;
+        offset = parseInt(timezone.tzlib_get_offset(zone, `${dateISO}`, `${formattedHours}:${formattedMinutes}`))
+    }
+    
+    // Return the formatted date string in the format MM/DD/YYYY and the time as an integer
+    // final_time = time + offset > 0 ?  time+offset : time + offset + 2400;
+    final_time = time+offset;
+    console.log(date, offset, time)
+
+    if(time+offset > 2400){
+        dateObj.setDate(dateObj.getDate() +1)
+        date = dateObj.toLocaleDateString().slice(0,10)
+        console.log("over " + tzid, date)
+    }
+    else if(time+offset < 0){
+        dateObj.setDate(dateObj.getDate() -1)
+        date = dateObj.toLocaleDateString().slice(0,10)
+        console.log("under " + tzid, date)
     }
 
-    // Return the formatted date string in the format MM/DD/YYYY and the time as an integer
-    final_time = time + offset > 0 ?  time+offset : time + offset + 2400;
-
-    return [`${formattedMonth}/${formattedDay}/${year}`, `${final_time}`];
+    return [`${date}`, `${final_time}`];
 }
 
 // Function to add an event to a specific date
