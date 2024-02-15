@@ -243,29 +243,9 @@ function parseEvent(event, rawDate){
         }
 
         if(event.summary != undefined){
-            console.log(jsonEvent)
             addEventToDate(jsonEvent["date"], jsonEvent);
         }
     }
-}
-
-function parseTimezone(tzData, years, months) {
-    tzStore = {
-        "start": "", 
-        "end": "",
-    };
-
-    for (const randomString in tzData) {
-        if(tzData[randomString].hasOwnProperty("datetype")){
-            const date_time = tzData[randomString]
-            console.log("here " + date_time.rrule)
-            console.log(tzData)
-            if(date_time.rrule != undefined){
-                // const dates = date_time.rrule.between(new Date(years[0, months[0], 0, 0, 0, 0, 0), new Date(years[1], months[1], 31, 0, 0, 0, 0));
-            }
-        }
-    }
-
 }
 
 function formatDate(inputDate, tzid) {
@@ -308,17 +288,14 @@ function formatDate(inputDate, tzid) {
     // Return the formatted date string in the format MM/DD/YYYY and the time as an integer
     // final_time = time + offset > 0 ?  time+offset : time + offset + 2400;
     final_time = time+offset;
-    console.log(date, offset, time)
 
     if(time+offset > 2400){
         dateObj.setDate(dateObj.getDate() +1)
         date = dateObj.toLocaleDateString().slice(0,10)
-        console.log("over " + tzid, date)
     }
     else if(time+offset < 0){
         dateObj.setDate(dateObj.getDate() -1)
         date = dateObj.toLocaleDateString().slice(0,10)
-        console.log("under " + tzid, date)
     }
 
     return [`${date}`, `${final_time}`];
