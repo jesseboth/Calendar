@@ -244,7 +244,7 @@ function parseEvent(event, rawDate){
             }
         }
 
-        jsonEvent["location"] = event.location;
+        jsonEvent["location"] = createGoogleMapsLink(event.location);
         if(event.description != undefined){
             jsonEvent["description"] = String(event.description).trimStart();
             if(jsonEvent["description"] == ""){
@@ -360,4 +360,28 @@ function isDateInDST(inputDate) {
     var dstEnd = new Date(year, 10, 3);   // DST ends on the first Sunday of November
     dstEnd.setDate( dstEnd.getDate() + (7 - dstEnd.getDay()) % 7 ); // Find the first Sunday
     return date >= dstStart && date < dstEnd;
+  }
+
+  function createGoogleMapsLink(inputString) {
+    // Regular expression to match the address within parentheses
+    var addressRegex = /\((.*?)\)/;
+    
+    // Extracting the address from the input string
+    var match = addressRegex.exec(inputString);
+    if (match) {
+      var address = match[1];
+      var addressEncoded = encodeURIComponent(address);
+      
+      // Removing the address portion from the input string
+      var wordsBeforeAddress = inputString.replace(addressRegex, '').trim();
+      
+      // Constructing the Google Maps link
+      var googleMapsLink = "https://www.google.com/maps?q=" + addressEncoded;
+      
+      // Adding the words before the address as the link text
+      return '<a href="' + googleMapsLink + '">' + wordsBeforeAddress + '</a>';
+    } else {
+      // If no address is found, return the original string
+      return inputString;
+    }
   }
