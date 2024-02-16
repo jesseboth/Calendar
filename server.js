@@ -17,6 +17,7 @@ var toServe;
 var url = "";
 var timeZone = "";
 timezones = {};
+noDaylight = {};
 
 // Read the manifest.json file
 fs.readFile('secrets.json', 'utf8', (err, data) => {
@@ -32,6 +33,7 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
         url = secrets.ical;
         timeZone = secrets.timezone;
         timezones = secrets.timezones;
+        noDaylight = secrets.noDaylight;
         parseIcal();
         // You can use the version variable here in your server code
         // For example, you can send it as a response to an HTTP request
@@ -220,15 +222,26 @@ function parseEvent(event, rawDate){
         }
 
         jsonEvent["summary"] = event.summary;
+        date = rawDate.toISOString().slice(0, 10) + event.start.toISOString().slice(10, 24)
         jsonEvent["date"] = formatDate(rawDate, tzid)[0];
         if(jsonEvent["date"] == 0){
             return;
         }
 
-        if(!json.all_day){
+        if(!jsonEvent.all_day){
             jsonEvent["start"] = formatDate(event.start, tzid)[1];
             jsonEvent["start"] = parseInt(jsonEvent["start"]);
             jsonEvent["end"] = parseInt(formatDate(event.end, tzid)[1]);
+            if(jsonEvent["start"] < 0){
+                jsonEvent["start"] += 2400;
+            }
+            if(jsonEvent["end"] < 0){
+                jsonEvent["end"] += 2400;
+            }
+            if(noDaylight.hasOwnProperty(event.start.tz) && !isDateInDST(rawDate)){
+                jsonEvent["start"] -= 100;
+                jsonEvent["end"] -= 100;
+            }
         }
 
         jsonEvent["location"] = event.location;
@@ -242,7 +255,7 @@ function parseEvent(event, rawDate){
             jsonEvent["description"] = undefined;
         }
 
-        if(event.summary != undefined){
+        if(event.summary != undefined || event.summary.startsWith("Canceled")){
             addEventToDate(jsonEvent["date"], jsonEvent);
         }
     }
@@ -338,3 +351,13 @@ function valiDate(inputDate){
     // Check if the difference is between -5 and 5 (inclusive) months
     return Math.abs(diffMonths) <= 5;
 }
+
+function isDateInDST(inputDate) {
+    date = new Date(inputDate)
+    year = date.getFullYear();
+    var dstStart = new Date(year, 2, 10); // DST starts on the second Sunday of March
+    dstStart.setDate( dstStart.getDate() + (7 - dstStart.getDay()) % 7 ); // Find the second Sunday
+    var dstEnd = new Date(year, 10, 3);   // DST ends on the first Sunday of November
+    dstEnd.setDate( dstEnd.getDate() + (7 - dstEnd.getDay()) % 7 ); // Find the first Sunday
+    return date >= dstStart && date < dstEnd;
+  }
