@@ -1,0 +1,371 @@
+:root {
+  --width: 130px;
+  --height: 108px;
+}
+.cal {
+  position: absolute;
+  display: inline-grid;
+  grid-template-columns: auto auto auto auto auto auto auto;
+  background-color: #0e0e0e;
+  margin-top: 75px;
+  margin-left: 31.5%;
+  user-select: none;
+}
+
+.day {
+  background-color: #0e0e0e;
+  border: 1px solid #0f99e3;
+  text-align: start;
+  text-indent: 2px;
+  width: var(--width);
+  height: var(--height);
+  font-size: 15px;
+  color: #0f99e3;
+  font-family: Orbitron;
+  user-select: none;
+  position: relative;
+}
+.start{
+  background-color: #0e0e0e;
+  border: 1px solid #0f99e3;
+  text-align: start;
+  text-indent: 2px;
+  width: var(--width);
+  height: var(--height);
+  font-size: 15px;
+  color: #0f99e3;
+  font-family: Orbitron;
+  user-select: none;
+  position: relative;
+}
+.week{
+  background-color: #0f99e3;
+  width: var(--width);
+  height: 25px;
+  text-align: center;
+  border: 1px solid #0f99e3;
+  border-bottom: hidden;
+  font-family: Orbitron;
+  user-select: none;
+}
+.extra{
+  visibility: hidden;
+  background-color: #0e0e0e;
+  border: 1px solid #0f99e3;
+  text-align: start;
+  text-indent: 2px;
+  width: var(--width);
+  height: 0px;  /*half of total*/
+  font-size: 15px;
+  color: #0f99e3;
+  font-family: Orbitron;
+  user-select: none;
+  position: relative;
+}
+.event{
+  color: #015bbc;
+  font-size: 13px;
+  user-select: none;
+  text-align: left;
+  margin-left: 3px;
+  margin-top: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 127px;
+  display: block;
+  overflow: hidden;
+  font-weight: 500;
+}
+
+.event_todo{
+  color: #ff9900;
+}
+.event_work{
+  color: #00ff8c;
+}
+.event_exam{
+  color: #bd0000;
+}
+.event_quiz{
+  color: #eef72b
+}
+
+
+.event_extra{
+  color: #015bbc;
+  font-size: 12px;
+  user-select: none;
+  width: var(--width);
+  font-family: wingdings;
+  text-align: center;
+  overflow: hidden;
+  margin-top: -1px;
+  position: absolute;
+  bottom: 0;
+}
+
+#today{
+  position: absolute;
+  width: 450px;
+}
+#today_container{
+  position: absolute;
+  height: 565px;
+  width: 450px;
+  margin-top: 70px;
+  margin-left: 20px;
+  overflow: hidden;
+}
+
+#time{
+  font-family: Orbitron;
+  font-size: 75px;
+  color: #0f99e3;
+  position: fixed;
+  user-select: none;
+  margin-left: 20px;
+  font-weight: medium;
+bottom: 0;
+}
+
+#month{
+  font-family: Orbitron;
+  font-weight: 100;
+  font-size: 30px;
+  color: #0f99e3;
+  position: absolute;
+  user-select: none;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.none{
+  font-family: Orbitron;
+  font-weight: bold;
+  font-size: 25px;
+  color: #383838;
+}
+.summary{
+  font-family: Orbitron;
+  font-weight: bold;
+  font-size: 25px;
+  color: #383838;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 450px;
+  display: block;
+  overflow: hidden
+}
+.location{
+  font-family: Orbitron;
+  font-weight: 100;
+  font-size: 25px;
+  color: #383838;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 450px;
+  display: block;
+  overflow: hidden
+}
+.duration{
+  font-family: Orbitron;
+  font-size: 20px;
+  color: #383838;
+  white-space: nowrap;
+}
+.break {
+  height: 10px;
+}
+.event_container{
+  height: 96px;
+  width: 450px;
+}
+#link{
+  color: inherit;
+  text-decoration: none;
+}
+
+.mini_weather{
+  width: 35px;
+  height: 20px;
+  margin-left: 90px;
+  position: relative;
+  margin-top: -20px;
+}
+
+.mini_weather_icon{
+  width: 32px;
+  height: 32px;
+  margin-left: -12px;
+  position: absolute;
+  margin-top: -1px;
+}
+
+#mini_01d{
+  width: 28px;
+  height: 28px;
+}
+
+.mini_weather_temp{
+  margin-top: 4px;
+  position: absolute;
+  margin-left: 20px;
+  font-size: 8px;
+
+}
+.mini_weather_temp_sub{
+  font-size: 8px;
+  font-family: Orbitron;
+  font-weight: 100;
+  color: #0f99e3;
+}
+
+.weather{
+  visibility: hidden;
+  position: absolute;
+  margin-top: -5px;
+}
+.weather_icon{
+  height: 90px;
+  width: 90px;
+  margin-left: -8px;
+}
+#icon_01d{
+  width: 88px;
+  height: 88px; 
+}
+.weather_temp{
+  font-family: Orbitron;
+  font-weight: bold;
+  font-size: 20px;
+  color: #0f99e3;
+  margin-top: -90px;
+  margin-left: 60px;
+}
+
+#back{
+  position: absolute;
+  bottom: 0;
+  float: right;
+  right: 0;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+#arrows{
+  position: absolute;
+  bottom:0;
+  float: right;
+  width: 925px;
+  /* height: 50px; */
+  right:0;
+  margin-right: 120px;
+  margin-left: 483px;
+  margin-bottom: 10px;
+  user-select: none;
+}
+.arrow{
+  height: 50px;
+  width:50px;
+  cursor: pointer;
+}
+#forward{
+  /* margin-left: 100px; */
+  margin-left: 875px;
+  margin-top: -50px;
+  transform: rotateY(180deg)
+}
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #383838;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+#description_container{
+  background-color: #151515;
+  width: 450px;
+  height: 560px;
+  margin-left: 10px;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  position: absolute;
+  border-radius: 10px;
+
+  visibility: hidden;  
+  
+}
+#desc_con{
+  background-color: #151515;
+  width: 420px;
+  height: 520px;
+  margin-left: 20px;
+  margin-top: 20px;
+  overflow: hidden;
+  overflow-y:scroll;
+  position: absolute;
+}
+#description{
+  width: 410px;
+  font-size: 18px;
+  font-family:'Courier New', Courier, monospace;
+  color:#a1a1a1;
+  position: absolute;
+}
+.red_dot{
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  background-color: #be0000;
+  border-radius: 50%;
+  margin-right: 5px;
+  margin-top: 5px;
+  display: inline-block;
+  right: 0;
+  cursor: pointer;
+}
+#desc_con::-webkit-scrollbar {
+  width: 10px;
+}
+
+#desc_con::-webkit-scrollbar-thumb {
+  background: #303030;
+  border-radius: 20px;
+}
+
+#desc_con::-webkit-scrollbar-track {
+  background: #0e0e0e;
+  border-radius: 20px;
+}
+a{
+  color: #0f99e3;
+}
+.attachment{
+  height: 25px;
+  width: 410px;
+  overflow: hidden;
+  border-radius: 5px;
+  margin-top: 2px;
+}
+.attach_image{
+  margin-top: 4px;
+  margin-left: 2px;
+}
+.attach_name{
+  width: 80px;
+  margin-left: 18px;
+  margin-top: -20px;
+  white-space: nowrap;
+  color: #0f99e3;
+}
+.no_underline{
+  text-decoration: none;
+}
+
+  body {
+      overflow-y: hidden; /* Hide vertical scrollbar */
+      overflow-x: hidden; /* Hide horizontal scrollbar */
+  }

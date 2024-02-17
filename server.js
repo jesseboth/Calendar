@@ -76,7 +76,9 @@ async function parseIcal(){
             if(event.rrule){
                 const dates = event.rrule.between(new Date(year_start, month_start, 0, 0, 0, 0, 0), new Date(year_end, month_end, 31, 0, 0, 0, 0))
                 for(i = 0; i < dates.length; i++){
-                    parseEvent(event, dates[i])
+                    if(event.exdate == undefined || !event.exdate.hasOwnProperty(dates[i].toISOString().slice(0, 10))){
+                        parseEvent(event, dates[i])
+                    }
                 }
             }
             else {
@@ -222,25 +224,37 @@ function parseEvent(event, rawDate){
         }
 
         jsonEvent["summary"] = event.summary;
-        date = rawDate.toISOString().slice(0, 10) + event.start.toISOString().slice(10, 24)
-        jsonEvent["date"] = formatDate(rawDate, tzid)[0];
+        jsonEvent["date"] = rawDate.toLocaleDateString()
+
         if(jsonEvent["date"] == 0){
             return;
         }
 
         if(!jsonEvent.all_day){
-            jsonEvent["start"] = formatDate(event.start, tzid)[1];
-            jsonEvent["start"] = parseInt(jsonEvent["start"]);
+            jsonEvent["start"] = parseInt(formatDate(event.start, tzid)[1]);
             jsonEvent["end"] = parseInt(formatDate(event.end, tzid)[1]);
             if(jsonEvent["start"] < 0){
+                jsonEvent["date"] = addDate(rawDate, -1)
                 jsonEvent["start"] += 2400;
+            }
+            else if(jsonEvent["start"] > 2400){
+                jsonEvent["date"] = addDate(rawDate, 1)
+                jsonEvent["start"] -= 2400;
             }
             if(jsonEvent["end"] < 0){
                 jsonEvent["end"] += 2400;
             }
+            else if(jsonEvent["end"] > 2400){
+                jsonEvent["end"] -= 2400;
+            }
+
             if(noDaylight.hasOwnProperty(event.start.tz) && !isDateInDST(rawDate)){
                 jsonEvent["start"] -= 100;
                 jsonEvent["end"] -= 100;
+            }
+            if(noDaylight.hasOwnProperty(event.start.tz) && jsonEvent["start"] > 1200){
+                console.log(rawDate, rawDate.toLocaleDateString())
+                jsonEvent["date"] = addDate(rawDate, -1)
             }
         }
 
@@ -255,18 +269,13 @@ function parseEvent(event, rawDate){
             jsonEvent["description"] = undefined;
         }
 
-        if(event.summary != undefined || event.summary.startsWith("Canceled")){
+        if(event.summary != undefined && !event.summary.startsWith("Canceled")){
             addEventToDate(jsonEvent["date"], jsonEvent);
         }
     }
 }
 
 function formatDate(inputDate, tzid) {
-
-   //FIXME:
-    // if(inputDate.tz != undefined && inputDate.tz != timeZone && timezones[inputDate.tz] != timeZone){
-    //     return [0,0]
-    // }
 
     if(inputDate == undefined){
         return [0, 0]
@@ -379,9 +388,15 @@ function isDateInDST(inputDate) {
       var googleMapsLink = "https://www.google.com/maps?q=" + addressEncoded;
       
       // Adding the words before the address as the link text
-      return '<a href="' + googleMapsLink + '">' + wordsBeforeAddress + '</a>';
+      return '<a id="link" href="' + googleMapsLink + '">' + wordsBeforeAddress + '</a>';
     } else {
       // If no address is found, return the original string
       return inputString;
     }
   }
+
+function addDate(date, add){
+    cpy = date;
+    cpy.setDate(cpy.getDate() + add);
+    return cpy.toLocaleDateString()
+}

@@ -8,7 +8,6 @@ function run() {
     event_height = parseInt(window.getComputedStyle(document.getElementsByClassName("event_container")[0]).getPropertyValue('height'))
     updateTime()
     setInterval(updateTime, 100)
-    
 }
 
 let offset_check = false
@@ -59,6 +58,9 @@ function updateTime() {
 
     if(!set_dict){
         dict = dictionary();
+        if(dict != null){
+            set_dict = true;
+        }
         return;
     }
     else if(dict == null){
@@ -97,13 +99,13 @@ function updateTime() {
             min = datetime.getMinutes() + 1
         }
     }
-    if (set_weather_margin && set_year == null) {
-        weather_margin = parseInt(window.getComputedStyle(document.getElementById("month")).getPropertyValue('width'))
-        document.getElementsByClassName("weather")[0].style.marginLeft = (weather_margin + 32).toString() + "px"
-        document.getElementsByClassName("weather")[0].style.visibility = "visible"
-    } else {
-        set_weather_margin = true
-    }
+    // if (set_weather_margin && set_year == null) {
+    //     weather_margin = parseInt(window.getComputedStyle(document.getElementById("month")).getPropertyValue('width'))
+    //     document.getElementsByClassName("weather")[0].style.marginLeft = (weather_margin + 32).toString() + "px"
+    //     document.getElementsByClassName("weather")[0].style.visibility = "visible"
+    // } else {
+    //     set_weather_margin = true
+    // }
 }
 
 function set_time(time, date, day, color) {
@@ -187,7 +189,8 @@ function add_zero_24(i){
 }
 
 function get_key(month, day, year) {
-    return add_zero(month) + "/" + add_zero(day) + "/" + year.toString();
+    // return add_zero(month) + "/" + add_zero(day) + "/" + year.toString();
+    return month + "/" + day + "/" + year.toString();
 }
 
 function set_cal_dates(offset, month, year) {
@@ -221,7 +224,7 @@ function set_cal_dates(offset, month, year) {
             long_cal(offset, month_lengths[month], month + 1, year)
         } else {
             restore_cal()
-            // set_events(month + 1, i, year, off)
+            set_events(month + 1, i, year, off)
         }
         off++
     }
@@ -235,7 +238,8 @@ function set_cal_dates(offset, month, year) {
         end++
     }
 
-    let k = add_zero(datetime.getMonth()+1) + "/" + add_zero(datetime.getDate()) + "/" + datetime.getFullYear()
+    k = get_key(datetime.getMonth()+1, datetime.getDay(), datetime.getFullYear())
+    // let k = add_zero(datetime.getMonth()+1) + "/" + add_zero(datetime.getDate()) + "/" + datetime.getFullYear()
     if (current_key !== k) {
         document.getElementById(offset).style.color = "purple"
     }
