@@ -208,12 +208,12 @@ function parseEvent(event, rawDate){
             "start": null,
             "end": null,
             "location": "",
-            "description": undefined,
+            "description": null,
             "date": ""
         }
         tzid = undefined;
         if(event.start != undefined && event.start.hasOwnProperty("tz")){
-            if(timezones.hasOwnProperty(event.start.tz)){
+            if(timezones && timezones.hasOwnProperty(event.start.tz)){
                 tzid = timezones[event.start.tz]
             }
             else{
@@ -253,7 +253,6 @@ function parseEvent(event, rawDate){
                 jsonEvent["end"] -= 100;
             }
             if(noDaylight.hasOwnProperty(event.start.tz) && jsonEvent["start"] > 1200){
-                console.log(rawDate, rawDate.toLocaleDateString())
                 jsonEvent["date"] = addDate(rawDate, -1)
             }
         }
@@ -262,11 +261,8 @@ function parseEvent(event, rawDate){
         if(event.description != undefined){
             jsonEvent["description"] = String(event.description).trimStart();
             if(jsonEvent["description"] == ""){
-                jsonEvent["description"] = undefined;
+                jsonEvent["description"] = null;
             }
-        }
-        else{
-            jsonEvent["description"] = undefined;
         }
 
         if(event.summary != undefined && !event.summary.startsWith("Canceled")){
@@ -389,9 +385,16 @@ function isDateInDST(inputDate) {
       
       // Adding the words before the address as the link text
       return '<a id="link" href="' + googleMapsLink + '">' + wordsBeforeAddress + '</a>';
-    } else {
+    } else if(inputString == undefined){
+        return null
+    }
+    else {
       // If no address is found, return the original string
-      return inputString;
+      const arr = inputString.split(',');
+      var addressEncoded = encodeURIComponent(inputString);
+      var wordsBeforeAddress = inputString.replace(addressRegex, '').trim();
+      var googleMapsLink = "https://www.google.com/maps?q=" + addressEncoded;
+      return '<a id="link" href="' + googleMapsLink + '">' + arr[0] + '</a>';
     }
   }
 
