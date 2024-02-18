@@ -203,7 +203,7 @@ profile_info = {
   "img/profile.png":
     "<img id='img_main' src='img/profile.png' width='36' height='36'/>",
   "img/biamp.png":
-    "<img id='img_user1' src='img/ub.png' width='36' height='36'/>",
+    "<img id='img_user1' src='img/biamp.png' width='36' height='36'/>",
   "img/anon.png":
     "<img id='img_user2' src='img/anon.png' width='36' height='36'/>",
   // "img/ub.png":
