@@ -3,6 +3,15 @@ const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
+function sendRedirect(url) {
+  if (window == window.parent) {
+    window.open(url, "_self");
+  }
+  else{
+    window.parent.postMessage(url, "*");
+  }
+}
+
 function clickyClick() {
   var keycode = event.keyCode ? event.keyCode : event.which;
   if (keycode == 13) {
@@ -13,7 +22,7 @@ function clickyClick() {
       url =
         "http://google.com/search?q=" +
         document.getElementById("comment").value;
-      window.open(url, "_self");
+        sendRedirect(url)
     }
   }
 }
@@ -26,7 +35,7 @@ function search() {
   else if (document.getElementById("comment").value !== "") {
     url =
       "http://google.com/search?q=" + document.getElementById("comment").value;
-    window.open(url, "_self");
+      sendRedirect(url)
   }
 }
 
@@ -356,9 +365,9 @@ function set_tab(
   document.getElementById("user2").innerHTML = profile_info[profiles[2]];
   document.getElementById("apps").src = icon_drawer;
   document.getElementById("email").src = email;
-  document.getElementById("email_link").setAttribute("href", email_link);
-  document.getElementById("drive_link").setAttribute("href", drive_link);
-  document.getElementById("cal_link").setAttribute("href", cal_link);
+  document.getElementById("email_link").setAttribute("onclick", "sendRedirect('" + email_link + "')");
+  document.getElementById("drive_link").setAttribute("onclick", "sendRedirect('" + drive_link + "')");
+  document.getElementById("cal_link").setAttribute("onclick", "sendRedirect('" + cal_link + "')");
   cal_icon();
   document.getElementById("time").style.color = color;
   document.getElementById("month").style.color = color;

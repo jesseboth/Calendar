@@ -31,7 +31,7 @@
 </div>
 <div id="icons">
     <div class="icon" id=gmail>
-        <a id="email_link" href="https://mail.google.com/mail/u/0/#inbox">
+        <a id="email_link" style="cursor:pointer" onclick="sendRedirect('https://mail.google.com/mail/u/0/#inbox')">
             <img id="email" alt="gmail" src="img/gmail.png" height="23" width="35">
         </a>
     </div>
@@ -48,31 +48,31 @@
                 </a>
             </div>
             <div id="cal" class="app">
-                <a href="https://calendar.google.com/calendar/" type="checkbox">
+                <a onclick="sendRedirect('https://calendar.google.com/calendar/')" type="checkbox">
                 <img class="calendarimg" src="img/default_google_calendar.png"
                     width="38" height="38"/>
                 </a>
             </div>
         
             <div id="youtube" class="app">
-                <a href="https://www.youtube.com/" type="checkbox">
+                <a onclick="sendRedirect('https://www.youtube.com/')" type="checkbox">
                     <img alt="youtube" src="img/youtube.png" width="33" height="33"/>
                 </a>
             </div>
             <div id="TV" class="app">
-                <a href="https://tv.youtube.com/" type="checkbox">
+                <a onclick="sendRedirect('https://tv.youtube.com/')" type="checkbox">
                     <img alt="TV" src="img/youtube_tv.png" width="36" height="36"/>
                 </a>
             </div>
         
         
             <div id="drive" class="app">
-                <a href="https://drive.google.com/drive/u/0/my-drive" type="checkbox">
+                <a onclick="sendRedirect('https://drive.google.com/drive/u/0/my-drive')" type="checkbox">
                     <img src="img/drive.png" width="33" height="33"/>
                 </a>
             </div>
             <div id="password" class="app">
-                <a href="https://passwords.google.com/" type="checkbox">
+                <a onclick="sendRedirect('https://passwords.google.com/')" type="checkbox">
                     <img src="img/password.png" width="36" height="36"/>
                 </a>
             </div>
@@ -81,13 +81,13 @@
 
             <div id="app_select_2" class="inactive" style="display:none">
                 <div id="cal_2" class="app">
-                    <a href="https://calendar.google.com/calendar/" id="cal_link" type="checkbox">
+                    <a onclick="sendRedirect('https://calendar.google.com/calendar/')" id="cal_link" type="checkbox">
                         <img class="calendarimg" src="img/Google_calendar.png"
                         width="38" height="38"/>
                     </a>
                 </div>
                 <div id="drive_2" class="app">
-                    <a href="https://drive.google.com/drive/u/0/my-drive" id="drive_link" type="checkbox">
+                    <a onclick="sendRedirect('https://drive.google.com/drive/u/0/my-drive')" id="drive_link" type="checkbox">
                         <img src="img/drive.png" width="33" height="33"/>
                     </a>
                 </div>

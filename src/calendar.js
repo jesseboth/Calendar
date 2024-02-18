@@ -1026,3 +1026,12 @@ function back_clicked() {
         document.getElementById("description_container").style.visibility = "hidden"
     }
 }
+
+function sendRedirect(url) {
+    if (window == window.parent) {
+      window.open(url, "_self");
+    }
+    else{
+      window.parent.postMessage(url, "*");
+    }
+  }

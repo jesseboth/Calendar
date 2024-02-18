@@ -384,7 +384,7 @@ function isDateInDST(inputDate) {
       var googleMapsLink = "https://www.google.com/maps?q=" + addressEncoded;
       
       // Adding the words before the address as the link text
-      return '<a id="link" href="' + googleMapsLink + '">' + wordsBeforeAddress + '</a>';
+      return '<a id="link" onclick="sendRedirect(\'' + googleMapsLink + '\')">' + wordsBeforeAddress + '</a>';
     } else if(inputString == undefined){
         return null
     }
@@ -394,7 +394,7 @@ function isDateInDST(inputDate) {
       var addressEncoded = encodeURIComponent(inputString);
       var wordsBeforeAddress = inputString.replace(addressRegex, '').trim();
       var googleMapsLink = "https://www.google.com/maps?q=" + addressEncoded;
-      return '<a id="link" href="' + googleMapsLink + '">' + arr[0] + '</a>';
+      return '<a id="link" onclick="sendRedirect(\'' + googleMapsLink + '\')">' + arr[0] + '</a>';
     }
   }
 
