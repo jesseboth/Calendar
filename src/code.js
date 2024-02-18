@@ -198,21 +198,21 @@ function start_color() {
   document.getElementById("month").style.color = color;
 }
 
-profiles = ["img/biamp.png", "img/profile.png", "img/anon.png"];
+profiles = ["img/profile.png", "img/biamp.png", "img/anon.png"];
 profile_info = {
-  "img/biamp.png":
-    "<img id='img_main' src='img/biamp.png' width='36' height='36'/>",
   "img/profile.png":
-    "<img id='img_user1' src='img/profile.png' width='36' height='36'/>",
+    "<img id='img_main' src='img/profile.png' width='36' height='36'/>",
+  "img/biamp.png":
+    "<img id='img_user1' src='img/ub.png' width='36' height='36'/>",
   "img/anon.png":
-      "<img id='img_user2' src='img/anon.png' width='36' height='36'/>",
+    "<img id='img_user2' src='img/anon.png' width='36' height='36'/>",
   // "img/ub.png":
   //   "<img id='img_userx' src='img/ub.png' width='36' height='36'/>",
 };
 function main_tab() {
   document.getElementById("google").classList.remove("virus");
   color = "#0f99e3";
-  img = "img/biamp_logo.png";
+  img = "img/google.png";
   height = "100px";
   width = "300px";
   email = "img/gmail.png";
@@ -220,7 +220,7 @@ function main_tab() {
   drive_link = "https://drive.google.com/drive/u/1/"
   cal_link = "https://calendar.google.com/calendar/u/1/r/week"
   icon_drawer = "img/app_drawer.png";
-  profile = "img/biamp.png";
+  profile = "img/profile.png";
   _top = "-470px";
   _left = "0px";
   app_top = "-86px";
@@ -245,8 +245,8 @@ function main_tab() {
 
 function first_tab() {
   document.getElementById("google").classList.remove("virus");
-  color = "#0f99ed";
-  img = "img/google.png";
+  color = "#0f99e3";
+  img = "img/biamp_logo.png";
   height = "100px";
   width = "300px";
   email = "img/gmail.png";
@@ -254,7 +254,7 @@ function first_tab() {
   drive_link = "https://drive.google.com/drive/u/1/"
   cal_link = "https://calendar.google.com/calendar/u/1/r/week"
   icon_drawer = "img/app_drawer.png";
-  profile = "img/profile.png";
+  profile = "img/biamp.png";
   _top = "-470px";
   _left = "0px";
   app_top = "-86px";

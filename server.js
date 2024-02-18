@@ -248,11 +248,11 @@ function parseEvent(event, rawDate){
                 jsonEvent["end"] -= 2400;
             }
 
-            if(noDaylight.hasOwnProperty(event.start.tz) && !isDateInDST(rawDate)){
+            if(noDaylight && noDaylight.hasOwnProperty(event.start.tz) && !isDateInDST(rawDate)){
                 jsonEvent["start"] -= 100;
                 jsonEvent["end"] -= 100;
             }
-            if(noDaylight.hasOwnProperty(event.start.tz) && jsonEvent["start"] > 1200){
+            if(noDaylight && noDaylight.hasOwnProperty(event.start.tz) && jsonEvent["start"] > 1200){
                 jsonEvent["date"] = addDate(rawDate, -1)
             }
         }
