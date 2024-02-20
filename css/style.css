@@ -418,7 +418,7 @@ body {
     100% {clip-path: inset(38% 0 26% 0);}
 }
 .virus::after {
-    content: url(img/glitch.png);
+    content: url(../img/glitch.png);
     position: absolute;
     left: 2px;
     text-shadow: -1px 0 red;
@@ -451,7 +451,7 @@ body {
     100% {clip-path: inset(18% 0 77% 0);}
 }
 .virus::before {
-    content: url(images/glitch.png);
+    content: url(../img/glitch.png);
     position: absolute;
     left: -2px;
     text-shadow: 1px 0 blue;
