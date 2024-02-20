@@ -233,7 +233,6 @@ function main_tab() {
   document.getElementById("img_user1").addEventListener("click", first_tab);
   document.getElementById("img_user2").addEventListener("click", second_tab);
   document.getElementById("apps").addEventListener("click", appToggle);
-  document.getElementById("custom_cal").addEventListener("click", calredirect);
   document.querySelectorAll('.app').forEach(item => {
       item.addEventListener('click', event => {
         app_clicked_on()
