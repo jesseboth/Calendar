@@ -212,7 +212,7 @@ function format_events() {
     now = current
     all_day = current["all_day"];
     todo = current["todo"];
-    if (current.hasOwnProperty("descitption") &&  current["description"] !== null) {
+    if (current.hasOwnProperty("description") &&  current["description"] !== null) {
       name = "<span class='dot_cont'><div id='dot_cur' class='dot' ></div></span>" + current["summary"];
     } else {
       name = current["summary"];
@@ -228,7 +228,7 @@ function format_events() {
     all_day = next["all_day"];
     todo = next["todo"];
     name = next["summary"];
-    if (next.hasOwnProperty("descitption") && next["description"] !== null) {
+    if (next.hasOwnProperty("description") && next["description"] !== null) {
       name =
         "<span class='dot_cont'><div id='dot_next' class='dot'></div></span>" + next["summary"];
     } else {
