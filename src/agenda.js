@@ -212,7 +212,7 @@ function format_events() {
     now = current
     all_day = current["all_day"];
     todo = current["todo"];
-    if (current.hasOwnProperty("descitption") &&  current["description"] !== undefined) {
+    if (current.hasOwnProperty("descitption") &&  current["description"] !== null) {
       name = "<span class='dot_cont'><div id='dot_cur' class='dot' ></div></span>" + current["summary"];
     } else {
       name = current["summary"];

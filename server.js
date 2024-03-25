@@ -14,7 +14,7 @@ var jsonEvents = jsonEvents1
 
 var toServe;
 
-var url = "";
+var urls = [];
 var timeZone = "";
 timezones = {};
 noDaylight = {};
@@ -30,7 +30,7 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
         // Parse the JSON data
         const secrets = JSON.parse(data);
   
-        url = secrets.ical;
+        urls = secrets.ical;
         timeZone = secrets.timezone;
         timezones = secrets.timezones;
         noDaylight = secrets.noDaylight;
@@ -69,22 +69,24 @@ async function parseIcal(){
         year_start += 1;
     }
 
-    if(url != ""){
-        events = await ical.async.fromURL(url);
-        for (const event of Object.values(events)) {
-
-            if(event.rrule){
-                const dates = event.rrule.between(new Date(year_start, month_start, 0, 0, 0, 0, 0), new Date(year_end, month_end, 31, 0, 0, 0, 0))
-                for(i = 0; i < dates.length; i++){
-                    if(event.exdate == undefined || !event.exdate.hasOwnProperty(dates[i].toISOString().slice(0, 10))){
-                        parseEvent(event, dates[i])
+    if(urls != []){
+        for(j= 0; j < urls.length; j++){
+            events = await ical.async.fromURL(urls[j]);
+            for (const event of Object.values(events)) {
+                
+                if(event.rrule){
+                    const dates = event.rrule.between(new Date(year_start, month_start, 0, 0, 0, 0, 0), new Date(year_end, month_end, 31, 0, 0, 0, 0))
+                    for(i = 0; i < dates.length; i++){
+                        if(event.exdate == undefined || !event.exdate.hasOwnProperty(dates[i].toISOString().slice(0, 10))){
+                            parseEvent(event, dates[i])
+                        }
                     }
                 }
-            }
-            else {
-                parseEvent(event, event.start);
-            }
-        };
+                else {
+                    parseEvent(event, event.start);
+                }
+            };
+        }
         toServe = jsonEvents
     }
 }
@@ -97,6 +99,7 @@ const logEvents = require('./logEvents');
 const EventEmitter = require('events');
 const { formatDistanceToNow } = require('date-fns');
 const { json } = require('express');
+const { fi } = require('date-fns/locale');
 class Emitter extends EventEmitter { };
 // initialize object 
 const myEmitter = new Emitter();
@@ -234,11 +237,11 @@ function parseEvent(event, rawDate){
             jsonEvent["start"] = parseInt(formatDate(event.start, tzid)[1]);
             jsonEvent["end"] = parseInt(formatDate(event.end, tzid)[1]);
             if(jsonEvent["start"] < 0){
-                jsonEvent["date"] = addDate(rawDate, -1)
+                jsonEvent["date"] = addDate(rawDate, 1)
                 jsonEvent["start"] += 2400;
             }
             else if(jsonEvent["start"] > 2400){
-                jsonEvent["date"] = addDate(rawDate, 1)
+                jsonEvent["date"] = addDate(rawDate, -1)
                 jsonEvent["start"] -= 2400;
             }
             if(jsonEvent["end"] < 0){
