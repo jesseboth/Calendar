@@ -372,12 +372,16 @@ function isDateInDST(inputDate) {
 
   function createGoogleMapsLink(inputString) {
 
-    // if(inputString.startsWith("https://")){
-    //     return inputString.split("https://")[1].split("/")[0]
-    // }
-    // else if(inputString.startsWith("http")){
-    //     return "**" + inputString.split("http://")[1].split("/")[0]
-    // }
+    if(inputString == undefined || inputString == null){
+        return "-";
+    }
+
+    if(inputString.startsWith("https://")){
+      return '<a id="link" onclick="sendRedirect(\'' + inputString + '\')">' + inputString.split("https://")[1].split("/")[0] + '</a>';
+    }
+    else if(inputString.startsWith("http")){
+        return '<a id="link" onclick="sendRedirect(\'' + inputString + '\')">' + "** "+ inputString.split("http://")[1].split("/")[0] + '</a>';
+    }
 
     // Regular expression to match the address within parentheses
     var addressRegex = /\((.*?)\)/;
