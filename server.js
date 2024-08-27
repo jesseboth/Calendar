@@ -25,11 +25,11 @@ fs.readFile('secrets.json', 'utf8', (err, data) => {
       console.error('Error reading secrets.json:', err);
       return;
     }
-  
+
     try {
         // Parse the JSON data
         const secrets = JSON.parse(data);
-  
+
         urls = secrets.ical;
         timeZone = secrets.timezone;
         timezones = secrets.timezones;
@@ -64,28 +64,32 @@ async function parseIcal(){
         month_start+=12;
         year_start -=1;
     }
-    else if(mont_end > 11){
+    else if(month_end > 11){
         month_end -= 12;
-        year_start += 1;
+        year_end += 1;
     }
 
     if(urls != []){
         for(j= 0; j < urls.length; j++){
-            events = await ical.async.fromURL(urls[j]);
-            for (const event of Object.values(events)) {
-                
-                if(event.rrule){
-                    const dates = event.rrule.between(new Date(year_start, month_start, 0, 0, 0, 0, 0), new Date(year_end, month_end, 31, 0, 0, 0, 0))
-                    for(i = 0; i < dates.length; i++){
-                        if(event.exdate == undefined || !event.exdate.hasOwnProperty(dates[i].toISOString().slice(0, 10))){
-                            parseEvent(event, dates[i])
+            try {
+                events = await ical.async.fromURL(urls[j]);
+                for (const event of Object.values(events)) {
+                    if(event.rrule){
+                        const dates = event.rrule.between(new Date(year_start, month_start, 0, 0, 0, 0, 0), new Date(year_end, month_end, 31, 0, 0, 0, 0))
+                        for(i = 0; i < dates.length; i++){
+                            if(event.exdate == undefined || !event.exdate.hasOwnProperty(dates[i].toISOString().slice(0, 10))){
+                                parseEvent(event, dates[i])
+                            }
                         }
                     }
-                }
-                else {
-                    parseEvent(event, event.start);
-                }
-            };
+                    else {
+                        parseEvent(event, event.start);
+                    }
+                };
+            }
+            catch (error){
+                console.error("Unable to fetch ical: ", error)
+            }
         }
         toServe = jsonEvents
     }
@@ -101,7 +105,7 @@ const { formatDistanceToNow } = require('date-fns');
 const { json } = require('express');
 const { fi } = require('date-fns/locale');
 class Emitter extends EventEmitter { };
-// initialize object 
+// initialize object
 const myEmitter = new Emitter();
 myEmitter.on('log', (msg, fileName) => logEvents(msg, fileName));
 const PORT = process.env.PORT || 8000;
@@ -271,6 +275,7 @@ function parseEvent(event, rawDate){
         if(event.summary != undefined && !event.summary.startsWith("Canceled")){
             addEventToDate(jsonEvent["date"], jsonEvent);
         }
+
     }
 }
 
@@ -279,16 +284,16 @@ function formatDate(inputDate, tzid) {
     if(inputDate == undefined){
         return [0, 0]
     }
-    
+
     const dateObj = new Date(inputDate);
     var date = dateObj.toLocaleDateString().slice(0, 10);
     const dateISO = dateObj.toISOString().slice(0, 10);
     const hours = dateObj.getUTCHours();
     const minutes = dateObj.getUTCMinutes();
-    
+
     // Format the time as an integer in the format HHMM
     const time = hours * 100 + minutes;
-    
+
     // Pad single digit month, day, and minutes with leading zeros
     // const formattedMonth = month < 10 ? '0' + month : month;
     // const formattedDay = day < 10 ? '0' + day : day;
@@ -297,15 +302,20 @@ function formatDate(inputDate, tzid) {
     const formattedHours = hours < 10 ? '0' + hours : hours;
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
 
-    
+
     // console.log("here timezone " + inputDate.tz);
-    
+
     var offset = 0;
     if(tzid != undefined){
         const zone = tzid == "Etc/UTC" ? timeZone : tzid;
-        offset = parseInt(timezone.tzlib_get_offset(zone, `${dateISO}`, `${formattedHours}:${formattedMinutes}`))
+        try{
+            offset = parseInt(timezone.tzlib_get_offset(zone, `${dateISO}`, `${formattedHours}:${formattedMinutes}`))
+        }
+        catch (error){
+            console.error("Error getting timezone offset: ", error)
+        }
     }
-    
+
     // Return the formatted date string in the format MM/DD/YYYY and the time as an integer
     // final_time = time + offset > 0 ?  time+offset : time + offset + 2400;
     final_time = time+offset;
@@ -351,7 +361,7 @@ function valiDate(inputDate){
 
     const dateObj = new Date(inputDate);
     const todayDateObj = new Date();
-    
+
     // Get the difference in months between the input date and today's date
     const diffMonths = (dateObj.getFullYear() - todayDateObj.getFullYear()) * 12 +
                        (dateObj.getMonth() - todayDateObj.getMonth());
@@ -385,19 +395,19 @@ function isDateInDST(inputDate) {
 
     // Regular expression to match the address within parentheses
     var addressRegex = /\((.*?)\)/;
-    
+
     // Extracting the address from the input string
     var match = addressRegex.exec(inputString);
     if (match) {
       var address = match[1];
       var addressEncoded = encodeURIComponent(address);
-      
+
       // Removing the address portion from the input string
       var wordsBeforeAddress = inputString.replace(addressRegex, '').trim();
-      
+
       // Constructing the Google Maps link
       var googleMapsLink = "https://www.google.com/maps?q=" + addressEncoded;
-      
+
       // Adding the words before the address as the link text
       return '<a id="link" onclick="sendRedirect(\'' + googleMapsLink + '\')">' + wordsBeforeAddress + '</a>';
     } else if(inputString == undefined){

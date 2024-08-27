@@ -12,4 +12,5 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["node", "server.js"]
+#CMD ["node", "server.js"]
+CMD ["sh", "-c", "node server.js >> /usr/src/app/logs/server.log 2>&1"]
